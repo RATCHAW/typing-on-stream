@@ -1,10 +1,9 @@
-import GameManager from '@/game/gamewithchat';
+import gameLobby from '@/game/gameLobby';
 
 try {
-    const game = new GameManager();
+    const game = new gameLobby();
     game.join('RATCHAW');
     game.join('hichamMallouli');
-    game.listen();
 } catch (error) {
     console.error(error);
 }
