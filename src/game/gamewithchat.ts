@@ -31,7 +31,7 @@ class GameManager {
         // Check if the game is already running
         let game = this.games.get(channel);
         if (!game) {
-            game = new Game();
+            game = new Game(this.chatClient);
             this.games.set(channel, game);
         }
         game.start();

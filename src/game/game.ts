@@ -5,7 +5,7 @@ import { generateWord } from './utils/wordGenerator';
 class Game {
     running: boolean = false;
     private timeoutId: NodeJS.Timeout | null = null;
-    constructor(private chatClient: ChatClient = new ChatClient()) {}
+    constructor(private chatClient: ChatClient) {}
 
     join(channel: string) {
         this.chatClient.join(channel);
