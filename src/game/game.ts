@@ -15,10 +15,14 @@ class Game {
     constructor(private chatClient: ChatClient) {}
 
     async joinChat(channelName: string) {
-        this.chatClient.connect();
-        await this.chatClient.join(channelName);
-        console.log(`Joined ${channelName}`);
-        this.commandsListener();
+        try {
+            this.chatClient.connect();
+            await this.chatClient.join(channelName);
+            console.log(`Joined ${channelName}`);
+            this.commandsListener();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     commandsListener() {

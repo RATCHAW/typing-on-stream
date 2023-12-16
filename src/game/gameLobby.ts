@@ -2,9 +2,10 @@ import { ChatClient } from '@twurple/chat';
 import Game from './game';
 
 class gameLobbys {
-    join(channelName: string): void {
+    async join(channelName: string): Promise<void> {
         const game = new Game(new ChatClient());
-        game.joinChat(channelName);
+        await game.joinChat(channelName);
+        console.log(`Joined ${channelName}`);
     }
 }
 
