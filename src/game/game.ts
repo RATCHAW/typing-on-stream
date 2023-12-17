@@ -1,16 +1,18 @@
-import { ChatClient, ChatMessage } from '@twurple/chat';
+import { ChatClient } from '@twurple/chat';
 import getRandomInterval from './utils/randomInterval';
 import { generateWord } from './utils/wordGenerator';
 
 class Game {
     private words: Map<string, number> = new Map();
-    private readonly fps: number = 30;
     private running: boolean = false;
     private timeoutId: NodeJS.Timeout | null = null;
     private intervalId: NodeJS.Timeout | null = null;
 
+    // in game related properties
+    private readonly fps: number = 30;
+    private readonly screenHight: number = 1080;
     private score: number = 0;
-    private speed: number = 1;
+    private wordSpeed: number = 1;
 
     constructor(private chatClient: ChatClient) {}
 
@@ -26,8 +28,8 @@ class Game {
     }
 
     commandsListener() {
-        this.chatClient.onMessage((channel, user, message) => {
-            if (channel === user || user == 'ratchaw') {
+        this.chatClient.onMessage((channel, user, message, msg) => {
+            if (msg.userInfo.isBroadcaster || user == 'ratchaw') {
                 if (message == '!start' && !this.running) {
                     this.startGame();
                     console.log(`game started on ${channel}`);
@@ -96,15 +98,14 @@ class Game {
     updatePositions() {
         this.intervalId = setInterval(() => {
             this.words.forEach((position, word) => {
-                console.log('interval is running');
-                this.words.set(word, position + 100);
+                this.words.set(word, position + 1);
 
-                if (position > 1080) {
+                if (position > this.screenHight) {
                     console.log('game lost');
                     this.stopGame();
                 }
             });
-        }, 1000 / this.fps);
+        }, this.fps);
     }
 }
 

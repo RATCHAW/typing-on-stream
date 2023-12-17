@@ -1,8 +1,7 @@
-// join.ts
 import { Socket } from 'socket.io';
 import chatClient from '@/twitch/chatClient';
-import { ChatMessage, ChatUser } from '@twurple/chat';
 import client from '@/redisClient';
+import gameLobby from '@/game/gameLobby';
 
 function generateFourDigitNumber(): number {
     return Math.floor(1000 + Math.random() * 9000);
@@ -10,25 +9,32 @@ function generateFourDigitNumber(): number {
 
 export function handleVerifyBroadcaster(socket: Socket) {
     socket.on('broadcaster', async (data) => {
-        const { broadcaster } = data;
-        await chatClient.join(broadcaster);
+        try {
+            await chatClient.join(data.broadcaster);
 
-        const code = generateFourDigitNumber();
+            const code = generateFourDigitNumber();
 
-        // expire in 2 minutes
-        await client.set(socket.id, code, { EX: 60 * 2 });
-        socket.emit('code', { code });
+            // expire in 2 minutes
+            await client.set(socket.id, code, { EX: 60 * 2 });
+            socket.emit('code', { code });
+        } catch (e) {
+            socket.emit('error', { error: 'Not a valid channel name' });
+        }
     });
 
     const executeCommandListener = chatClient.onMessage(async (channel, user, message, msg) => {
         const verificationCode = await client.get(socket.id);
         if (msg.userInfo.isBroadcaster && message === verificationCode?.toString()) {
             socket.emit('verified', { verified: true });
+            chatClient.part(channel);
+            gameLobby.join(channel);
             chatClient.removeListener(executeCommandListener);
         }
     });
 
     socket.on('disconnect', () => {
+        //TOTO channel.part('channel') quit channel
+
         chatClient.removeListener(executeCommandListener);
         client.del(socket.id);
     });

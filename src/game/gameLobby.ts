@@ -9,4 +9,4 @@ class gameLobbys {
     }
 }
 
-export default gameLobbys;
+export default new gameLobbys();
