@@ -9,13 +9,13 @@ function generateFourDigitNumber(): number {
 
 export function handleVerifyBroadcaster(socket: Socket) {
     socket.on('broadcaster', async (data) => {
+        const { broadcaster } = data;
         try {
-            await chatClient.join(data.broadcaster);
-
+            await chatClient.join(broadcaster);
             const code = generateFourDigitNumber();
 
             // expire in 2 minutes
-            await client.set(socket.id, code, { EX: 60 * 2 });
+            await client.set(socket.id + broadcaster, code, { EX: 60 * 2 });
             socket.emit('code', { code });
         } catch (e) {
             socket.emit('error', { error: 'Not a valid channel name' });
@@ -23,8 +23,8 @@ export function handleVerifyBroadcaster(socket: Socket) {
     });
 
     const executeCommandListener = chatClient.onMessage(async (channel, user, message, msg) => {
-        const verificationCode = await client.get(socket.id);
-        if (msg.userInfo.isBroadcaster && message === verificationCode?.toString()) {
+        const verificationCode = await client.get(socket.id + channel);
+        if (msg.userInfo.isBroadcaster && message === verificationCode) {
             socket.emit('verified', { verified: true });
             chatClient.part(channel);
             gameLobby.join(channel);
