@@ -2,17 +2,16 @@ import { ChatClient } from '@twurple/chat';
 import getRandomInterval from './utils/randomInterval';
 import { generateWord } from './utils/wordGenerator';
 import redisClient from '@/redisClient';
+import adjustDifficulty from './difficulty';
 
 class Game {
-    // private words: Map<string, number> = new Map();
+    private timeouts = new Map<string, NodeJS.Timeout>();
     private running: boolean = false;
     private timeoutId: NodeJS.Timeout | null = null;
 
     // in game related properties
-    private readonly fps: number = 30;
-    private readonly screenHight: number = 1080;
     private score: number = 0;
-    private wordSpeed: number = 1;
+    private difficulty = adjustDifficulty(this.score);
 
     constructor(private chatClient: ChatClient) {}
 
@@ -20,7 +19,6 @@ class Game {
         try {
             this.chatClient.connect();
             await this.chatClient.join(channelName);
-            console.log(`Joined ${channelName}`);
             this.commandsListener();
         } catch (error) {
             console.log(error);
@@ -29,41 +27,30 @@ class Game {
 
     commandsListener() {
         this.chatClient.onMessage((channel, user, message, msg) => {
-            if (msg.userInfo.isBroadcaster || user == 'ratchaw') {
+            if (msg.userInfo.isBroadcaster) {
                 if (message == '!start' && !this.running) {
                     this.startGame(channel);
-                    console.log(`game started on ${channel}`);
                 }
                 if (message == '!stop' && this.running) {
                     this.stopGame(channel);
-                    console.log(`game stopped on ${channel}`);
                 }
-            }
-        });
-    }
-
-    //if message match the word in the set, delete it
-    compareWords() {
-        this.chatClient.onMessage(async (channel, user, message) => {
-            if (!this.running) {
-                return;
-            }
-            const word = await redisClient.SISMEMBER(`words:${channel}`, message);
-            if (word) {
-                redisClient.SREM(`words:${channel}`, message);
-                this.score += 1;
-                console.log(`score: ${this.score}`);
             }
         });
     }
 
     startGame(channel: string) {
+        console.log(`game started on ${channel}`);
         this.running = true;
         this.runGameLoop(channel);
-        this.compareWords();
+        this.checkAndRemoveMatchedWords();
     }
 
-    stopGame(channel: string) {
+    async stopGame(channel: string, gameOver?: boolean) {
+        if (gameOver) {
+            console.log(`game over on ${channel}`);
+        } else {
+            console.log(`game stopped on ${channel}`);
+        }
         this.running = false;
 
         if (this.timeoutId !== null) {
@@ -71,22 +58,64 @@ class Game {
             this.timeoutId = null;
         }
 
-        //clera the set
-        redisClient.DEL(`words:${channel}`);
+        await redisClient.DEL(`words:${channel}`);
+        this.timeouts.forEach((timeout) => {
+            clearTimeout(timeout);
+        });
+        this.timeouts.clear();
     }
 
     private runGameLoop(channel: string) {
         if (this.running) {
             this.timeoutId = setTimeout(
-                () => {
-                    const word = generateWord({ minLength: 3, maxLength: 5 });
+                async () => {
+                    const word = generateWord({
+                        minLength: this.difficulty.wordMinLength,
+                        maxLength: this.difficulty.wordMaxLength,
+                    });
                     console.log(word);
-                    redisClient.SADD(`words:${channel}`, word);
+                    const myObj = {
+                        word: word,
+                        difficulty: adjustDifficulty(this.score),
+                    };
+                    console.log(myObj);
+                    await redisClient.SADD(`words:${channel}`, word);
+
+                    this.timeouts.set(
+                        word,
+                        setTimeout(() => {
+                            console.log(`Timeout for word: ${word}`);
+                            this.stopGame(channel, true);
+                        }, this.difficulty.wordTimeout),
+                    );
+
                     this.runGameLoop(channel);
                 },
-                getRandomInterval(2000, 3000),
+                getRandomInterval(this.difficulty.wordInterval[0], this.difficulty.wordInterval[1]),
             );
         }
+    }
+
+    // Check if the incoming message is a member of the Redis set for the current channel.
+    // If it is, clear the timeout for the word, remove the word from the Redis set, and increment the score.
+    checkAndRemoveMatchedWords() {
+        this.chatClient.onMessage(async (channel, user, message) => {
+            if (!this.running) {
+                return;
+            }
+            const wordExist = await redisClient.SISMEMBER(`words:${channel}`, message);
+            if (wordExist) {
+                const timeout = this.timeouts.get(message);
+                if (timeout) {
+                    clearTimeout(timeout);
+                    this.timeouts.delete(message);
+                }
+
+                await redisClient.SREM(`words:${channel}`, message);
+                this.score += 1;
+                console.log(`score: ${this.score}`);
+            }
+        });
     }
 }
 
