@@ -1,8 +1,9 @@
 import { ChatClient } from '@twurple/chat';
 import getRandomInterval from './utils/randomInterval';
 import { generateWord } from './utils/wordGenerator';
-import redisClient from '@/redisClient';
+import redisClient from '@/database/redisClient';
 import adjustDifficulty from './difficulty';
+import logger from '@/utils/logger';
 
 class Game {
     private timeouts = new Map<string, NodeJS.Timeout>();
@@ -21,7 +22,7 @@ class Game {
             await this.chatClient.join(channelName);
             this.commandsListener();
         } catch (error) {
-            console.log(error);
+            logger.error(error);
         }
     }
 
@@ -39,7 +40,7 @@ class Game {
     }
 
     startGame(channel: string) {
-        console.log(`game started on ${channel}`);
+        logger.info(`game started on ${channel}`);
         this.running = true;
         this.runGameLoop(channel);
         this.checkAndRemoveMatchedWords();
@@ -47,9 +48,9 @@ class Game {
 
     async stopGame(channel: string, gameOver?: boolean) {
         if (gameOver) {
-            console.log(`game over on ${channel}`);
+            logger.info(`game over on ${channel}`);
         } else {
-            console.log(`game stopped on ${channel}`);
+            logger.info(`game stopped on ${channel}`);
         }
         this.running = false;
 
@@ -73,18 +74,18 @@ class Game {
                         minLength: this.difficulty.wordMinLength,
                         maxLength: this.difficulty.wordMaxLength,
                     });
-                    console.log(word);
+                    logger.info(word);
                     const myObj = {
                         word: word,
                         difficulty: adjustDifficulty(this.score),
                     };
-                    console.log(myObj);
+                    logger.info(myObj);
                     await redisClient.SADD(`words:${channel}`, word);
 
                     this.timeouts.set(
                         word,
                         setTimeout(() => {
-                            console.log(`Timeout for word: ${word}`);
+                            logger.info(`Timeout for word: ${word}`);
                             this.stopGame(channel, true);
                         }, this.difficulty.wordTimeout),
                     );
@@ -113,7 +114,7 @@ class Game {
 
                 await redisClient.SREM(`words:${channel}`, message);
                 this.score += 1;
-                console.log(`score: ${this.score}`);
+                logger.info(`score: ${this.score}`);
             }
         });
     }

@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import chatClient from '@/twitch/chatClient';
-import client from '@/redisClient';
+import client from '@/database/redisClient';
 import gameLobby from '@/game/gameLobby';
 
 function generateFourDigitNumber(): number {

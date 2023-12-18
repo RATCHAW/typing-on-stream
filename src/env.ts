@@ -6,6 +6,10 @@ const env = cleanEnv(process.env, {
     REDIS_URL: str({
         default: 'redis://localhost:6379',
     }),
+    NODE_ENV: str({
+        default: 'development',
+        choices: ['development', 'production'],
+    }),
 });
 
 export default env;
