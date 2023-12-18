@@ -1,10 +1,11 @@
 import { createClient } from 'redis';
 import env from '../env';
+import logger from '@/utils/logger';
 
-const client = createClient({
+const redisClient = createClient({
     url: env.REDIS_URL,
 });
 
-client.on('error', (err) => console.log('Redis Client Error', err));
+redisClient.on('error', (err) => logger.info('Redis Client Error', err));
 
-export default client;
+export default redisClient;
