@@ -3,8 +3,6 @@ import { ChatClient } from '@twurple/chat';
 
 export const verificationChatClient = new ChatClient({});
 
-export const gameChatClient = new ChatClient({});
-
 export async function connectChatClients() {
     verificationChatClient.connect();
     verificationChatClient.onConnect(() => {
