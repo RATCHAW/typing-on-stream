@@ -10,9 +10,4 @@ export async function connectChatClients() {
     verificationChatClient.onConnect(() => {
         logger.info('Connected to verification chat client');
     });
-
-    gameChatClient.connect();
-    gameChatClient.onConnect(() => {
-        logger.info('Connected to game chat client');
-    });
 }
