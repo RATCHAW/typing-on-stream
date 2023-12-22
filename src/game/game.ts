@@ -21,7 +21,7 @@ class Game {
         return true;
     }
 
-    public async stopGame(channel: string, gameOver?: boolean): Promise<string | { message: string; error: boolean }> {
+    public async stopGame(gameOver?: boolean): Promise<string | { message: string; error: boolean }> {
         if (!this.running) {
             return { message: 'Game is not running', error: true };
         }
@@ -34,19 +34,21 @@ class Game {
         }
 
         // Clear cached words
-        await redisClient.DEL(`words:${channel}`);
+        await redisClient.DEL(`words:${this.channelUsername}`);
 
         // Clear timeouts for each word
         this.wordsTimeouts.forEach((timeout) => {
             clearTimeout(timeout);
         });
         this.wordsTimeouts.clear();
-        return { message: 'Game stopped', error: false };
+        return gameOver ? { message: 'Game stopped', error: false } : 'Game Stopped';
     }
 
     private runGameLoop(channel: string): void {
+        if (!this.running) {
+            return;
+        }
         const { wordMinLength, wordMaxLength, wordTimeout, wordInterval } = this.difficulty;
-
         this.wordGenerateTimoutId = setTimeout(
             async () => {
                 const word = generateWord({
@@ -54,18 +56,19 @@ class Game {
                     maxLength: wordMaxLength,
                 });
 
-                await redisClient.SADD(`words:${channel}`, word);
+                const isSaved = await redisClient.SADD(`words:${channel}`, word);
 
-                this.eventEmitter.emit('newWord', word);
+                if (isSaved) {
+                    this.eventEmitter.emit('newWord', word);
 
-                this.wordsTimeouts.set(
-                    word,
-                    setTimeout(() => {
-                        this.eventEmitter.emit('wordTimout', word);
-                        this.stopGame(channel, true);
-                    }, wordTimeout),
-                );
-
+                    this.wordsTimeouts.set(
+                        word,
+                        setTimeout(() => {
+                            this.eventEmitter.emit('wordTimout', word);
+                            this.stopGame(true);
+                        }, wordTimeout),
+                    );
+                }
                 this.runGameLoop(channel);
             },
             getRandomInterval(wordInterval[0], wordInterval[1]),
