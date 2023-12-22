@@ -6,24 +6,28 @@ import { EventEmitter } from 'events';
 
 class Game {
     private wordsTimeouts = new Map<string, NodeJS.Timeout>();
-    private running: boolean = false;
     private wordGenerateTimoutId: NodeJS.Timeout | null = null;
 
+    private running: boolean = false;
     public score: number = 0;
     private difficulty = adjustDifficulty(this.score);
     public channelUsername: string | undefined;
     public eventEmitter: EventEmitter = new EventEmitter();
 
-    public startGame(channelUsername: string): boolean {
-        this.channelUsername = channelUsername;
-        this.running = true;
-        this.runGameLoop(channelUsername);
-        return true;
+    public startGame(channelUsername: string): string {
+        if (!this.running) {
+            this.channelUsername = channelUsername;
+            this.running = true;
+            this.runGameLoop(channelUsername);
+            return 'Game started';
+        } else {
+            return 'Game already running';
+        }
     }
 
-    public async stopGame(gameOver?: boolean): Promise<string | { message: string; error: boolean }> {
+    public async stopGame(word?: boolean): Promise<string | boolean> {
         if (!this.running) {
-            return { message: 'Game is not running', error: true };
+            return 'Game is not running';
         }
         this.running = false;
         this.score = 0;
@@ -41,7 +45,7 @@ class Game {
             clearTimeout(timeout);
         });
         this.wordsTimeouts.clear();
-        return gameOver ? { message: 'Game stopped', error: false } : 'Game Stopped';
+        return word ? this.eventEmitter.emit('gameOver', word) : 'Game stopped';
     }
 
     private runGameLoop(channel: string): void {
