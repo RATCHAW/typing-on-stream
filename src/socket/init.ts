@@ -1,11 +1,26 @@
 import { Server, Socket } from 'socket.io';
-import gameLobby from '@/game/gameLobby';
+import { Server as HTTPServer } from 'http';
 import { handleVerifyBroadcaster } from '@/socket/events/verifyBroadcaster';
+import { handleGameOverlay } from './events/gameOverlay';
 
-export function initializeSocket(server: any) {
-    const io = new Server(server);
+export class ServerSocket {
+    public io: Server;
 
-    io.on('connection', (socket: Socket) => {
+    constructor(server: HTTPServer) {
+        this.io = new Server(server, {
+            cors: {
+                origin: '*',
+            },
+        });
+        this.io.of('/verify').on('connection', this.VerifyBroadcaster);
+        this.io.of(/^\/game\/(.+)$/).on('connection', this.GameOverlay);
+    }
+
+    VerifyBroadcaster(socket: Socket) {
         handleVerifyBroadcaster(socket);
-    });
+    }
+
+    GameOverlay(socket: Socket) {
+        handleGameOverlay(socket);
+    }
 }

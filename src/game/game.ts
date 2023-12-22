@@ -1,40 +1,39 @@
-import { ChatClient } from '@twurple/chat';
 import getRandomInterval from './utils/randomInterval';
 import { generateWord } from './utils/wordGenerator';
 import redisClient from '@/database/redisClient';
 import adjustDifficulty from './difficulty';
 import logger from '@/utils/logger';
+import { gameChatClient } from '@/twitch/chatClients';
+import { Socket } from 'socket.io';
 
 class Game {
     private wordsTimeouts = new Map<string, NodeJS.Timeout>();
-    // private sessionTimout!: NodeJS.Timeout;
     private running: boolean = false;
     private wordGenerateTimoutId: NodeJS.Timeout | null = null;
-    private gameSessionId!: string;
-    private commandsListener!: any;
 
     // in game related properties
     private score: number = 0;
     private difficulty = adjustDifficulty(this.score);
 
-    constructor(private chatClient: ChatClient) {}
+    constructor(
+        private channelUsername: string,
+        private socket: Socket,
+    ) {
+        this.createNewGame(channelUsername);
+        logger.info(`Joined ${channelUsername}`);
+    }
 
-    async createNewGame(channelName: string, lobbyId: string) {
+    private async createNewGame(channelUsername: string) {
         try {
-            // create game session
-            this.gameSessionId = lobbyId;
-            await redisClient.SET(`sessionId:${this.gameSessionId}`, channelName);
-
-            this.chatClient.connect();
-            await this.chatClient.join(channelName);
-
-            this.commandsListener = this.chatClient.onMessage((channel, user, message, msg) => {
-                if (msg.userInfo.isBroadcaster) {
+            await gameChatClient.join(channelUsername);
+            gameChatClient.onMessage((channel, user, message, msg) => {
+                // checks if the message is coming from the channel that the game was created on,
+                if (msg.userInfo.isBroadcaster && channel === channelUsername) {
                     if (message == '!start' && !this.running) {
-                        this.startGame(channel);
+                        this.startGame(channelUsername);
                     }
                     if (message == '!stop' && this.running) {
-                        this.stopGame(channel);
+                        this.stopGame(channelUsername);
                     }
                 }
             });
@@ -43,35 +42,24 @@ class Game {
         }
     }
 
-    startGame(channel: string) {
-        logger.info(`game started on ${channel}`);
+    private startGame(channelUsername: string) {
+        logger.info(`game started on ${channelUsername}`);
+        this.socket.emit('gameStatus', { channelUsername, status: 'Game started' });
         this.running = true;
-        this.runGameLoop(channel);
+        this.runGameLoop(channelUsername);
         this.checkAndRemoveMatchedWords();
     }
 
-    removeListener() {
-        this.chatClient.removeListener(this.commandsListener);
-    }
-
-    async stopGame(channel: string, gameOver?: boolean) {
+    private async stopGame(channel: string, gameOver?: boolean) {
         if (gameOver) {
             logger.info(`game over on ${channel}`);
+            this.socket.emit('gameStatus', { channel, status: 'Game over' });
         } else {
             logger.info(`game stopped on ${channel}`);
+            this.socket.emit('gameStatus', { channel, status: 'Game stopped' });
         }
         this.running = false;
         this.score = 0;
-
-        const sessionLifeTime = 60 * 60 * 24;
-        await redisClient.SET(`sessionId:${this.gameSessionId}`, channel, { EX: sessionLifeTime });
-
-        // clear timout for session
-
-        // setTimeout(async () => {
-        this.chatClient.removeListener(this.commandsListener);
-        // }, sessionLifeTime * 1000);
-        // logger.info(`session timeout set for ${sessionLifeTime} seconds`);
 
         if (this.wordGenerateTimoutId !== null) {
             clearTimeout(this.wordGenerateTimoutId);
@@ -88,7 +76,7 @@ class Game {
         this.wordsTimeouts.clear();
     }
 
-    runGameLoop(channel: string) {
+    private runGameLoop(channel: string) {
         const { wordMinLength, wordMaxLength, wordTimeout, wordInterval } = this.difficulty;
         if (this.running) {
             this.wordGenerateTimoutId = setTimeout(
@@ -98,6 +86,7 @@ class Game {
                         maxLength: wordMaxLength,
                     });
                     logger.info(word);
+                    this.socket.emit('word', { word: word });
                     const myObj = {
                         word: word,
                         difficulty: adjustDifficulty(this.score),
@@ -109,6 +98,7 @@ class Game {
                         word,
                         setTimeout(() => {
                             logger.info(`Timeout for word: ${word}`);
+                            this.socket.emit('wordTimeout', { word: word });
                             this.stopGame(channel, true);
                         }, wordTimeout),
                     );
@@ -120,12 +110,12 @@ class Game {
         }
     }
 
-    checkAndRemoveMatchedWords() {
-        this.chatClient.onMessage(async (channel, user, message) => {
+    private checkAndRemoveMatchedWords() {
+        gameChatClient.onMessage(async (channel, user, message) => {
             if (!this.running) {
                 return;
             }
-            const wordExist = await redisClient.SISMEMBER(`words:${channel}`, message);
+            const wordExist = await redisClient.SISMEMBER(`words:${this.channelUsername}`, message);
             if (wordExist) {
                 const timeout = this.wordsTimeouts.get(message);
                 if (timeout) {
@@ -133,9 +123,10 @@ class Game {
                     this.wordsTimeouts.delete(message);
                 }
 
-                await redisClient.SREM(`words:${channel}`, message);
+                await redisClient.SREM(`words:${this.channelUsername}`, message);
                 this.score += 1;
                 logger.info(`score: ${this.score}`);
+                this.socket.emit('score', { score: this.score });
             }
         });
     }
