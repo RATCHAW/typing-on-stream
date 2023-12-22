@@ -25,7 +25,7 @@ class Game {
         }
     }
 
-    public async stopGame(word?: boolean): Promise<string | boolean> {
+    public async stopGame(word?: string): Promise<string | boolean> {
         if (!this.running) {
             return 'Game is not running';
         }
@@ -45,7 +45,7 @@ class Game {
             clearTimeout(timeout);
         });
         this.wordsTimeouts.clear();
-        return word ? this.eventEmitter.emit('gameOver', word) : 'Game stopped';
+        return word ? this.eventEmitter.emit('gameOver', { status: 'Game over', word }) : 'Game stopped';
     }
 
     private runGameLoop(channel: string): void {
@@ -69,7 +69,7 @@ class Game {
                         word,
                         setTimeout(() => {
                             this.eventEmitter.emit('wordTimout', word);
-                            this.stopGame(true);
+                            this.stopGame(word);
                         }, wordTimeout),
                     );
                 }
