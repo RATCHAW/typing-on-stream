@@ -14,16 +14,16 @@ class Game {
     public channelUsername: string | undefined;
     public eventEmitter: EventEmitter = new EventEmitter();
 
-    public startGame(channelUsername: string) {
+    public startGame(channelUsername: string): boolean {
         this.channelUsername = channelUsername;
         this.running = true;
         this.runGameLoop(channelUsername);
-        return `Game started successfully on ${channelUsername}!`;
+        return true;
     }
 
-    public async stopGame(channel: string, gameOver?: boolean) {
+    public async stopGame(channel: string, gameOver?: boolean): Promise<string | { message: string; error: boolean }> {
         if (!this.running) {
-            return "Game isn't running";
+            return { message: 'Game is not running', error: true };
         }
         this.running = false;
         this.score = 0;
@@ -41,10 +41,10 @@ class Game {
             clearTimeout(timeout);
         });
         this.wordsTimeouts.clear();
-        return gameOver ? 'Game over' : 'Game stopped successfully';
+        return { message: 'Game stopped', error: false };
     }
 
-    private runGameLoop(channel: string) {
+    private runGameLoop(channel: string): void {
         const { wordMinLength, wordMaxLength, wordTimeout, wordInterval } = this.difficulty;
 
         this.wordGenerateTimoutId = setTimeout(
@@ -72,7 +72,7 @@ class Game {
         );
     }
 
-    async removeMatchedWords(word: string) {
+    async removeMatchedWords(word: string): Promise<string | undefined> {
         if (!this.running) {
             return;
         }
