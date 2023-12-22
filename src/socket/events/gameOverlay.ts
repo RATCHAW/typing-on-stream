@@ -18,10 +18,9 @@ export async function handleGameOverlay(socket: Socket) {
         const broadcaster = await Broadcaster.findOne({ sessionId }).exec();
 
         if (broadcaster) {
-            socket.join(`gameOverlay/${sessionId}`);
             await redisClient.HSET('sessions', sessionId, broadcaster.username);
             socket.emit('success', { message: 'session created' });
-            const game = new Game(broadcaster.username, socket);
+            new Game(broadcaster.username, socket);
 
             logger.info(`Session ${sessionId} for ${broadcaster.username} created`);
 
