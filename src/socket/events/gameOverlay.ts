@@ -26,12 +26,7 @@ export async function handleGameOverlay(socket: Socket) {
             });
 
             gameChatClient.onMessage(async (channel, user, message, msg) => {
-                const destroyedWord = await game.removeMatchedWords(message);
-
-                if (destroyedWord) {
-                    socket.emit('destroyedWord', { destroyedWord });
-                }
-
+                game.removeMatchedWords(message);
                 if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
                     if (message == '!start') {
                         const status = game.startGame(broadcaster.username);
@@ -42,6 +37,10 @@ export async function handleGameOverlay(socket: Socket) {
                         socket.emit('gameStatus', { status });
                     }
                 }
+            });
+
+            game.eventEmitter.on('destroyedWord', (word) => {
+                socket.emit('destroyedWord', { word });
             });
 
             game.eventEmitter.on('newWord', (word) => {

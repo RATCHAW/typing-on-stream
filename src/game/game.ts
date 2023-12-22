@@ -79,19 +79,19 @@ class Game {
         );
     }
 
-    async removeMatchedWords(word: string): Promise<string | undefined> {
+    async removeMatchedWords(word: string): Promise<void> {
         if (!this.running) {
             return;
         }
         const wordExist = await redisClient.SISMEMBER(`words:${this.channelUsername}`, word);
         if (wordExist) {
+            this.eventEmitter.emit('destroyedWord', word);
             const timeout = this.wordsTimeouts.get(word);
             clearTimeout(timeout);
             this.wordsTimeouts.delete(word);
 
             await redisClient.SREM(`words:${this.channelUsername}`, word);
             this.score += 1;
-            return word;
         }
     }
 }
