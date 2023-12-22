@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 import redisClient from '@/database/redisClient';
 import Broadcaster from '@/database/models/broadcaster';
-import logger from '@/utils/logger';
+// import { gameChatClient } from '@/twitch/chatClients';
 import Game from '@/game/game';
-import { gameChatClient } from '@/twitch/chatClients';
+import { ChatClient } from '@twurple/chat';
 
 export async function handleGameOverlay(socket: Socket) {
     const workspace = socket.nsp.name;
@@ -13,21 +13,47 @@ export async function handleGameOverlay(socket: Socket) {
     if (session) {
         socket.emit('error', { error: 'session already exist' });
         socket.disconnect();
-        logger.error(`Session ${sessionId} already exist`);
     } else {
         const broadcaster = await Broadcaster.findOne({ sessionId }).exec();
 
         if (broadcaster) {
-            await redisClient.HSET('sessions', sessionId, broadcaster.username);
-            socket.emit('success', { message: 'session created' });
-            new Game(broadcaster.username, socket);
+            const game = new Game();
+            const gameChatClient = new ChatClient({ channels: [broadcaster.username] });
+            gameChatClient.connect();
+            gameChatClient.onConnect(async () => {
+                await redisClient.HSET('sessions', sessionId, broadcaster.username);
+                socket.emit('success', { message: 'session created' });
+            });
 
-            logger.info(`Session ${sessionId} for ${broadcaster.username} created`);
+            gameChatClient.onMessage(async (channel, user, message, msg) => {
+                game.removeMatchedWords(message);
+                if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
+                    if (message == '!start') {
+                        const status = game.startGame(broadcaster.username);
+                        socket.emit('gameStatus', { status });
+                    }
+                    if (message == '!stop') {
+                        const status = await game.stopGame();
+                        socket.emit('gameStatus', { status });
+                    }
+                }
+            });
+
+            game.eventEmitter.on('destroyedWord', (word) => {
+                socket.emit('destroyedWord', { word });
+            });
+
+            game.eventEmitter.on('newWord', (word) => {
+                socket.emit('newWord', { word });
+            });
+
+            game.eventEmitter.on('gameOver', (status, word) => {
+                socket.emit('gameStatus', { status, word });
+            });
 
             socket.on('disconnect', async () => {
-                gameChatClient.part(broadcaster.username);
+                gameChatClient.quit();
                 await redisClient.HDEL('sessions', sessionId);
-                logger.info(`Session ${sessionId} deleted`);
             });
         } else {
             socket.emit('error', { error: 'broadcaster not found' });
