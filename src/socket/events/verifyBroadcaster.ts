@@ -36,21 +36,32 @@ export function handleVerifyBroadcaster(socket: Socket) {
         if (msg.userInfo.isBroadcaster && message === verificationCode) {
             const broadcaster = await Broadcaster.findOne({ username: channel }).exec();
             if (broadcaster) {
-                socket.emit('verified', { sessionId: broadcaster.sessionId });
+                socket.emit('verified', {
+                    sessionId: broadcaster.sessionId,
+                    message: 'Do you want to change the session ID? (yes/no)',
+                });
 
-                // const changeSessionId = true; // Set this to true if you want to change the sessionId
-                // if (changeSessionId) {
-                //     const newSessionId = nanoid();
-                //     broadcaster.sessionId = newSessionId;
-                //     await broadcaster.save();
-                //     socket.emit('newSessionId', { sessionId: newSessionId });
-                // }
+                // Define the event handler function
+                socket.on('sessionChange', async function handleChangeSessionId(response) {
+                    if (response.answer === 'yes') {
+                        const newSessionId = nanoid();
+                        broadcaster!.sessionId = newSessionId;
+                        await broadcaster!.save();
+                        socket.emit('sessionChange', { sessionId: newSessionId, message: 'Session ID changed' });
+                        socket.off('sessionchange', handleChangeSessionId);
+                    } else if (response.answer === 'no') {
+                        socket.off('sessionchange', handleChangeSessionId);
+                    } else {
+                        socket.emit('sessionchange', { message: 'Invalid asnwer, Please enter yes or no' });
+                    }
+                });
             } else {
                 const newSessionId = nanoid();
                 const newBroadcaster = new Broadcaster({
                     username: channel,
                     sessionId: newSessionId,
                 });
+
                 await newBroadcaster.save();
 
                 socket.emit('verified', { sessionId: newSessionId });
