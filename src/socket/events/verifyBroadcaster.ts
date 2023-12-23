@@ -41,18 +41,18 @@ export function handleVerifyBroadcaster(socket: Socket) {
                     message: 'Do you want to change the session ID? (yes/no)',
                 });
 
-                // Define the event handler function
+                // Listen for sessionId change
                 socket.on('sessionChange', async function handleChangeSessionId(response) {
                     if (response.answer === 'yes') {
                         const newSessionId = nanoid();
-                        broadcaster!.sessionId = newSessionId;
-                        await broadcaster!.save();
+                        broadcaster.sessionId = newSessionId;
+                        await broadcaster.save();
                         socket.emit('sessionChange', { sessionId: newSessionId, message: 'Session ID changed' });
-                        socket.off('sessionchange', handleChangeSessionId);
+                        socket.off('sessionChange', handleChangeSessionId);
                     } else if (response.answer === 'no') {
-                        socket.off('sessionchange', handleChangeSessionId);
+                        socket.off('sessionChange', handleChangeSessionId);
                     } else {
-                        socket.emit('sessionchange', { message: 'Invalid asnwer, Please enter yes or no' });
+                        socket.emit('sessionChange', { message: 'Invalid answer, Please enter yes or no' });
                     }
                 });
             } else {
