@@ -4,6 +4,14 @@ import redisClient from '@/database/redisClient';
 import adjustDifficulty from './difficulty';
 import { EventEmitter } from 'events';
 
+enum GameState {
+    NotRunning = 'Game is not running',
+    Started = 'Game started',
+    AlreadyRunning = 'Game already running',
+    Stopped = 'Game stopped',
+    GameOver = 'Game over',
+}
+
 class Game {
     private wordsTimeouts = new Map<string, NodeJS.Timeout>();
     private wordGenerateTimoutId: NodeJS.Timeout | null = null;
@@ -19,15 +27,15 @@ class Game {
             this.channelUsername = channelUsername;
             this.running = true;
             this.runGameLoop(channelUsername);
-            return 'Game started';
+            return GameState.Started;
         } else {
-            return 'Game already running';
+            return GameState.AlreadyRunning;
         }
     }
 
     public async stopGame(word?: string): Promise<string | boolean> {
         if (!this.running) {
-            return 'Game is not running';
+            return GameState.NotRunning;
         }
         this.running = false;
         this.score = 0;
@@ -45,7 +53,7 @@ class Game {
             clearTimeout(timeout);
         });
         this.wordsTimeouts.clear();
-        return word ? this.eventEmitter.emit('gameOver', { status: 'Game over', word }) : 'Game stopped';
+        return word ? this.eventEmitter.emit('gameOver', { status: 'Game over', word }) : GameState.Stopped;
     }
 
     private runGameLoop(channel: string): void {
@@ -75,7 +83,7 @@ class Game {
                 }
                 this.runGameLoop(channel);
             },
-            getRandomInterval(wordInterval[0], wordInterval[1]),
+            getRandomInterval(wordInterval.min, wordInterval.max),
         );
     }
 
