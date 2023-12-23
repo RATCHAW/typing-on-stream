@@ -39,8 +39,8 @@ export async function handleGameOverlay(socket: Socket) {
                 }
             });
 
-            game.eventEmitter.on('destroyedWord', (word) => {
-                socket.emit('destroyedWord', { word });
+            game.eventEmitter.on('destroyedWord', (word, score) => {
+                socket.emit('destroyedWord', { word, score });
             });
 
             game.eventEmitter.on('newWord', (word) => {

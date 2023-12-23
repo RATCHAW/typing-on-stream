@@ -93,13 +93,13 @@ class Game {
         }
         const wordExist = await redisClient.SISMEMBER(`words:${this.channelUsername}`, word);
         if (wordExist) {
-            this.eventEmitter.emit('destroyedWord', word);
+            this.score += 1;
+            this.eventEmitter.emit('destroyedWord', word, this.score);
             const timeout = this.wordsTimeouts.get(word);
             clearTimeout(timeout);
             this.wordsTimeouts.delete(word);
 
             await redisClient.SREM(`words:${this.channelUsername}`, word);
-            this.score += 1;
         }
     }
 }
