@@ -1,6 +1,6 @@
 let wordDifficulty: number;
 let wordTimeout: number;
-let wordInterval: number[];
+let wordInterval: { min: number; max: number };
 let wordMaxLength: number;
 let wordMinLength: number;
 let wordSize: number;
@@ -12,7 +12,7 @@ function adjustDifficulty(score: number) {
     if (score < 10) {
         wordDifficulty = 1;
         wordTimeout = 5000;
-        wordInterval = [3000, 3500];
+        wordInterval = { min: 3000, max: 3500 };
         wordMaxLength = 3;
         wordMinLength = 5;
         wordSize = 12;
@@ -22,7 +22,7 @@ function adjustDifficulty(score: number) {
     } else if (score < 20) {
         wordDifficulty = 2;
         wordTimeout = 4500;
-        wordInterval = [2500, 3000];
+        wordInterval = { min: 2500, max: 3000 };
         wordMaxLength = 4;
         wordMinLength = 6;
         wordSize = 14;
@@ -32,7 +32,7 @@ function adjustDifficulty(score: number) {
     } else {
         wordDifficulty = 3;
         wordTimeout = 4000;
-        wordInterval = [2000, 2500];
+        wordInterval = { min: 2000, max: 2500 };
         wordMaxLength = 5;
         wordMinLength = 7;
         wordSize = 16;
