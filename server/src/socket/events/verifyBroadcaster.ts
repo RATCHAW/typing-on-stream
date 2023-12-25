@@ -11,10 +11,12 @@ function generateFourDigitNumber(): number {
 export function handleVerifyBroadcaster(socket: Socket) {
     socket.on('broadcaster', async (data) => {
         const { broadcaster } = data;
+        const lowerCaseBroadcaster = broadcaster.toLowerCase();
+
         try {
             await verificationChatClient.join(broadcaster);
             const code = generateFourDigitNumber();
-            await redisClient.SET(`verificationFor:${socket.id}:channel:${broadcaster}`, code, { EX: 60 * 2 });
+            await redisClient.SET(`verificationFor:${socket.id}:channel:${lowerCaseBroadcaster}`, code, { EX: 60 * 2 });
             socket.emit('code', { code });
         } catch (e) {
             socket.emit('error', { error: 'Not a valid channel username' });
