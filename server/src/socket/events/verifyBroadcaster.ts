@@ -11,6 +11,11 @@ function generateFourDigitNumber(): number {
 export function handleVerifyBroadcaster(socket: Socket) {
     socket.on('broadcaster', async (data) => {
         const { broadcaster } = data;
+        if (typeof broadcaster !== 'string') {
+            socket.emit('error', { error: 'Not a valid channel username' });
+            return;
+        }
+
         const lowerCaseBroadcaster = broadcaster.toLowerCase();
 
         try {
@@ -40,21 +45,16 @@ export function handleVerifyBroadcaster(socket: Socket) {
             if (broadcaster) {
                 socket.emit('verified', {
                     sessionId: broadcaster.sessionId,
-                    message: 'Do you want to change the session ID? (yes/no)',
+                    message: 'Do you want to change the session ID?',
                 });
 
                 // Listen for sessionId change
                 socket.on('sessionChange', async function handleChangeSessionId(response) {
-                    if (response.answer === 'yes') {
+                    if (response.change === true) {
                         const newSessionId = nanoid();
                         broadcaster.sessionId = newSessionId;
                         await broadcaster.save();
                         socket.emit('sessionChange', { sessionId: newSessionId, message: 'Session ID changed' });
-                        socket.off('sessionChange', handleChangeSessionId);
-                    } else if (response.answer === 'no') {
-                        socket.off('sessionChange', handleChangeSessionId);
-                    } else {
-                        socket.emit('sessionChange', { message: 'Invalid answer, Please enter yes or no' });
                     }
                 });
             } else {
