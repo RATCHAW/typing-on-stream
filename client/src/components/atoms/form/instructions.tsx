@@ -1,29 +1,46 @@
-import React from "react";
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
-function Instructions() {
+interface InstructionsProps {
+  sessionId: string;
+  changeSessionId: () => void;
+}
+
+function Instructions({ sessionId, changeSessionId }: InstructionsProps) {
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(sessionId);
+    toast('Link copied!');
+  };
+  const handleChnageSessionId = () => {
+    changeSessionId();
+    navigator.clipboard.writeText(sessionId);
+    toast('Link changed and copied!');
+  };
   return (
-    <div className="flex flex-col justify-center items-center text-white">
-      <h1 className="text-4xl">Instruction</h1>
-      <p className="w-[600px]">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium
-        nostrum itaque vel maiores laborum earum enim tempora ducimus eaque quo
-        ratione, quis nobis numquam repudiandae laudantium sit iusto aperiam
-        consectetur.
+    <div className=" flex flex-col space-y-6 items-center transition-all">
+      <p className="text-white text-center text-xl">
+        Click on the URL provided in the window to access the game. <br /> Please avoid sharing this link, as it can't
+        be opened by two persons simultaneously. <br /> You can change the link any time by clicking on{' '}
+        <strong>Change Link</strong>
       </p>
-      <img
-        src="https://www.webfx.com/wp-content/uploads/2021/10/generic-image-placeholder.png"
-        alt=""
+
+      <input
+        type="text"
+        value={sessionId}
+        className="w-full px-4 py-2 border border-gray-300 rounded-l blur-sm"
+        readOnly
       />
-      <p className="w-[600px]">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium
-        nostrum itaque vel maiores laborum earum enim tempora ducimus eaque quo
-        ratione, quis nobis numquam repudiandae laudantium sit iusto aperiam
-        consectetur.
-      </p>
-      <img
-        src="https://www.webfx.com/wp-content/uploads/2021/10/generic-image-placeholder.png"
-        alt=""
-      />
+
+      <div className="relative">
+        <div className="flex space-x-3">
+          <button onClick={handleCopyLink} className=" w-48 bg-purple-700 text-white px-4 py-2 rounded">
+            Copy
+          </button>
+          <button onClick={handleChnageSessionId} className=" w-48 bg-purple-700 text-white px-4 py-2 rounded">
+            Change link
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
