@@ -11,7 +11,7 @@ export async function handleGameOverlay(socket: Socket) {
 
     const session = await redisClient.HGET('sessions', sessionId);
     if (session) {
-        socket.emit('error', { error: 'session already exist' });
+        socket.emit('session', { created: false, message: 'session already exists' });
         socket.disconnect();
     } else {
         const broadcaster = await Broadcaster.findOne({ sessionId }).exec();
@@ -22,7 +22,7 @@ export async function handleGameOverlay(socket: Socket) {
             gameChatClient.connect();
             gameChatClient.onConnect(async () => {
                 await redisClient.HSET('sessions', sessionId, broadcaster.username);
-                socket.emit('success', { message: 'session created' });
+                socket.emit('session', { created: true, message: 'session created' });
             });
 
             gameChatClient.onMessage(async (channel, user, message, msg) => {
@@ -56,7 +56,8 @@ export async function handleGameOverlay(socket: Socket) {
                 await redisClient.HDEL('sessions', sessionId);
             });
         } else {
-            socket.emit('error', { error: 'broadcaster not found' });
+            socket.emit('session', { created: false, message: 'session does not exist' });
+            socket.disconnect();
         }
     }
 }
