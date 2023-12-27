@@ -1,5 +1,5 @@
-import getRandomInterval from './utils/randomInterval';
-import { generateWord } from './utils/wordGenerator';
+import getRandomInterval from './randomInterval';
+import { generateWord } from './wordGenerator';
 import redisClient from '@/database/redisClient';
 import adjustDifficulty from './difficulty';
 import { EventEmitter } from 'events';
