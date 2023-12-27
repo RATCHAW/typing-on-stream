@@ -1,7 +1,12 @@
-import io from "socket.io-client";
+import { useParams } from 'react-router-dom';
+import io from 'socket.io-client';
 
-const apiUrl = "http://localhost:3000";
+let { sessionId } = useParams();
+
+const apiUrl = 'http://localhost:3000';
 
 const socketVerify = io(`${apiUrl}/verify`);
 
-export { socketVerify };
+const socketGame = io(`${apiUrl}/game/${sessionId}`);
+
+export { socketVerify, socketGame };
