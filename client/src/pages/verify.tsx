@@ -2,9 +2,9 @@ import FourDigitCode from '@/components/verify/fourDigitCode';
 import ChannelNameInput from '@/components/verify/channelNameInput';
 import Instructions from '@/components/verify/instructions';
 import LoadingImg from '@/components/verify/loadingImg';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
 import { useSocketVerify } from '@/hooks/useSocketVerify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Verify() {
   const {

@@ -16,7 +16,6 @@ const routes: RouteObject[] = [
       },
       {
         path: '/game/:sessionId',
-
         element: <Game />
       }
     ]

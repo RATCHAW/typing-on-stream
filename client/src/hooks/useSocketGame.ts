@@ -1,29 +1,32 @@
-// client\src\hooks\useSocketVerify.ts
-import { useEffect, useState } from 'react';
 import { socketGame } from '@/socket';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 type GameStatus = 'running' | 'stopped' | 'gameOver';
 
-export function useSocketVerify() {
+export function useSocketGame() {
   const [gameStatus, setGameStatus] = useState<GameStatus>('stopped');
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [loosingWord, setLoosingWord] = useState('');
 
-  useEffect(() => {
-    socketGame.connect();
+  const { sessionId } = useParams();
+  const gameSocket = socketGame(sessionId!);
 
-    socketGame.on('success', (data: { created: boolean; message: string }) => {
+  useEffect(() => {
+    gameSocket.connect();
+    console.log('gameSocket connected');
+    gameSocket.on('session', (data: { created: boolean; message: string }) => {
       const { created, message } = data;
       if (created) {
         setLoading(false);
+        console.log(message);
       } else {
         setErrorMsg(message);
       }
     });
 
-    socketGame.on('gameStatus', (data: { status: string; word: string }) => {
+    gameSocket.on('gameStatus', (data: { status: string; word: string }) => {
       const { status, word } = data;
       if (status == 'started') {
         setGameStatus('running');
@@ -36,20 +39,23 @@ export function useSocketVerify() {
     });
 
     //todo
-    socketGame.on('newWord', (data: { word: string; difficulties: any }) => {
+    gameSocket.on('newWord', (data: { word: string; difficulties: any }) => {
       //todo
     });
 
-    socketGame.on('destroyedWord', (data: { word: string; score: number }) => {
+    gameSocket.on('destroyedWord', (data: { word: string; score: number }) => {
       //todo
     });
 
     return () => {
-      socketGame.disconnect();
+      gameSocket.disconnect();
     };
   }, []);
 
   return {
-    //todo
+    gameStatus,
+    errorMsg,
+    loading,
+    loosingWord
   };
 }
