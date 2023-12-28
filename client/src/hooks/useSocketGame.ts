@@ -1,6 +1,7 @@
 import { socketGame } from '@/socket';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { WordAndDifficulties } from 'types/word';
 
 type GameStatus = 'running' | 'stopped' | 'gameOver';
 
@@ -9,14 +10,16 @@ export function useSocketGame() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [loosingWord, setLoosingWord] = useState('');
+  const [score, setScore] = useState(0);
+
+  const [words, setWords] = useState<WordAndDifficulties[]>([]);
 
   const { sessionId } = useParams();
   const gameSocket = socketGame(sessionId!);
 
   useEffect(() => {
     gameSocket.connect();
-    console.log('gameSocket connected');
-    gameSocket.on('session', (data: { created: boolean; message: string }) => {
+    gameSocket.off('session').on('session', (data: { created: boolean; message: string }) => {
       const { created, message } = data;
       if (created) {
         setLoading(false);
@@ -26,25 +29,29 @@ export function useSocketGame() {
       }
     });
 
-    gameSocket.on('gameStatus', (data: { status: string; word: string }) => {
+    gameSocket.off('gameStatus').on('gameStatus', (data: { status: string; word: string }) => {
       const { status, word } = data;
-      if (status == 'started') {
+      if (status == 'Game started') {
         setGameStatus('running');
-      } else if (status == 'stopped') {
+        console.log('Game started');
+      } else if (status == 'Game stopped') {
         setGameStatus('stopped');
-      } else if (status == 'gameOver') {
+      } else if (status == 'Game over') {
         setGameStatus('gameOver');
         setLoosingWord(word);
       }
     });
 
-    //todo
-    gameSocket.on('newWord', (data: { word: string; difficulties: any }) => {
-      //todo
+    gameSocket.off('newWord').on('newWord', (data: { wordAndDifficulties: WordAndDifficulties }) => {
+      const { wordAndDifficulties } = data;
+      setWords((prevWords) => [...prevWords, wordAndDifficulties]);
     });
 
-    gameSocket.on('destroyedWord', (data: { word: string; score: number }) => {
-      //todo
+    gameSocket.off('destroyedWord').on('destroyedWord', (data: { destroyedWord: string; newScore: number }) => {
+      const { destroyedWord, newScore } = data;
+
+      setScore(newScore);
+      setWords((words) => words.filter((word) => word.word !== destroyedWord));
     });
 
     return () => {
@@ -56,6 +63,8 @@ export function useSocketGame() {
     gameStatus,
     errorMsg,
     loading,
-    loosingWord
+    loosingWord,
+    score,
+    words
   };
 }
