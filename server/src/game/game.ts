@@ -62,25 +62,26 @@ class Game {
         const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake } = adjustDifficulty(this.score);
         this.wordGenerateTimoutId = setTimeout(
             async () => {
-                const word = generateWord({
+                const generatedWord = generateWord({
                     minLength: wordMinLength,
                     maxLength: wordMaxLength,
                 });
 
-                const isSaved = await redisClient.SADD(`words:${channel}`, word);
-                const difficulties = {
+                const isSaved = await redisClient.SADD(`words:${channel}`, generatedWord);
+                const wordAndDifficulties = {
+                    word: generatedWord,
                     wordTimeout,
                     wordShake,
                 };
 
                 if (isSaved) {
-                    this.eventEmitter.emit('newWord', word, difficulties);
+                    this.eventEmitter.emit('newWord', wordAndDifficulties);
 
                     this.wordsTimeouts.set(
-                        word,
+                        generatedWord,
                         setTimeout(() => {
-                            this.eventEmitter.emit('wordTimout', word);
-                            this.stopGame(word);
+                            this.eventEmitter.emit('wordTimout', generatedWord);
+                            this.stopGame(generatedWord);
                         }, wordTimeout),
                     );
                 }
