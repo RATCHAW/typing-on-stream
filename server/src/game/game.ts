@@ -59,7 +59,7 @@ class Game {
         if (!this.running) {
             return;
         }
-        const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake } = adjustDifficulty(this.score);
+        const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake, id } = adjustDifficulty(this.score);
         this.wordGenerateTimoutId = setTimeout(
             async () => {
                 const generatedWord = generateWord({
@@ -72,6 +72,7 @@ class Game {
                     word: generatedWord,
                     wordTimeout,
                     wordShake,
+                    id,
                 };
 
                 if (isSaved) {
