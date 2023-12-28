@@ -11,7 +11,10 @@ export async function handleGameOverlay(socket: Socket) {
 
     const session = await redisClient.HGET('sessions', sessionId);
     if (session) {
-        socket.emit('session', { created: false, message: 'session already exists' });
+        socket.emit('session', {
+            created: false,
+            message: ' Your session is currently active in another window or tab',
+        });
         socket.disconnect();
     } else {
         const broadcaster = await Broadcaster.findOne({ sessionId }).exec();
