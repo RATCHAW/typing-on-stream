@@ -46,8 +46,8 @@ export async function handleGameOverlay(socket: Socket) {
                 socket.emit('destroyedWord', { word, score });
             });
 
-            game.eventEmitter.on('newWord', (word, difficulties) => {
-                socket.emit('newWord', { word, difficulties });
+            game.eventEmitter.on('newWord', (wordAndDifficulties) => {
+                socket.emit('newWord', { wordAndDifficulties });
             });
 
             game.eventEmitter.on('gameOver', (status, word) => {
