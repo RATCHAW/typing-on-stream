@@ -14,6 +14,7 @@ enum GameState {
 
 class Game {
     private wordsTimeouts = new Map<string, NodeJS.Timeout>();
+    private words = new Set<string>();
     private wordGenerateTimoutId: NodeJS.Timeout | null = null;
 
     private running: boolean = false;
@@ -45,7 +46,8 @@ class Game {
         }
 
         // Clear cached words
-        await redisClient.DEL(`words:${this.channelUsername}`);
+
+        this.words.clear();
 
         // Clear timeouts for each word
         this.wordsTimeouts.forEach((timeout) => {
@@ -67,7 +69,12 @@ class Game {
                     maxLength: wordMaxLength,
                 });
 
-                const isSaved = await redisClient.SADD(`words:${channel}`, generatedWord);
+                if (!this.words.has(generatedWord)) {
+                    this.words.add(generatedWord);
+                } else {
+                    this.runGameLoop(channel);
+                    return;
+                }
                 const wordAndDifficulties = {
                     word: generatedWord,
                     wordTimeout,
@@ -75,17 +82,16 @@ class Game {
                     id,
                 };
 
-                if (isSaved) {
-                    this.eventEmitter.emit('newWord', wordAndDifficulties);
+                this.eventEmitter.emit('newWord', wordAndDifficulties);
 
-                    this.wordsTimeouts.set(
-                        generatedWord,
-                        setTimeout(() => {
-                            this.eventEmitter.emit('wordTimout', generatedWord);
-                            this.stopGame(generatedWord);
-                        }, wordTimeout),
-                    );
-                }
+                this.wordsTimeouts.set(
+                    generatedWord,
+                    setTimeout(() => {
+                        this.eventEmitter.emit('wordTimout', generatedWord);
+                        this.stopGame(generatedWord);
+                    }, wordTimeout),
+                );
+
                 this.runGameLoop(channel);
             },
             getRandomInterval(wordInterval.min, wordInterval.max),
@@ -96,7 +102,8 @@ class Game {
         if (!this.running) {
             return;
         }
-        const wordExist = await redisClient.SISMEMBER(`words:${this.channelUsername}`, word);
+
+        const wordExist = this.words.has(word);
         if (wordExist) {
             this.score += 1;
             this.eventEmitter.emit('destroyedWord', word, this.score);
@@ -104,7 +111,7 @@ class Game {
             clearTimeout(timeout);
             this.wordsTimeouts.delete(word);
 
-            await redisClient.SREM(`words:${this.channelUsername}`, word);
+            this.words.delete(word);
         }
     }
 }
