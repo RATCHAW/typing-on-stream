@@ -15,7 +15,7 @@ enum GameState {
 class Game {
     private wordsTimeouts = new Map<string, NodeJS.Timeout>();
     private words = new Set<string>();
-    private wordGenerateTimoutId: NodeJS.Timeout | null = null;
+    private wordGenerateTimoutId: NodeJS.Timeout | null = null; // timeout id for the next generated word
 
     private running: boolean = false;
     public score: number = 0;
@@ -40,15 +40,14 @@ class Game {
         this.running = false;
         this.score = 0;
 
+        //Force stop the next word generation by clearing the timeout
         if (this.wordGenerateTimoutId !== null) {
             clearTimeout(this.wordGenerateTimoutId);
             this.wordGenerateTimoutId = null;
         }
 
-        // Clear cached words
+        // clear saved word and than clear timeouts for each word
         this.words.clear();
-
-        // Clear timeouts for each word
         this.wordsTimeouts.forEach((timeout) => {
             clearTimeout(timeout);
         });
@@ -57,23 +56,23 @@ class Game {
     }
 
     private runGameLoop(channel: string): void {
-        if (!this.running) {
-            return;
-        }
+        if (!this.running) return;
+
         const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake } = adjustDifficulty(this.score);
         this.wordGenerateTimoutId = setTimeout(
-            async () => {
+            () => {
                 const generatedWord = generateWord({
                     minLength: wordMinLength,
                     maxLength: wordMaxLength,
                 });
 
-                if (!this.words.has(generatedWord)) {
-                    this.words.add(generatedWord);
-                } else {
+                if (this.words.has(generatedWord)) {
                     this.runGameLoop(channel);
                     return;
                 }
+
+                this.words.add(generatedWord);
+
                 const wordAndDifficulties = {
                     word: generatedWord,
                     id: nanoid(),
@@ -97,9 +96,7 @@ class Game {
     }
 
     async removeMatchedWords(word: string): Promise<void> {
-        if (!this.running) {
-            return;
-        }
+        if (!this.running) return;
 
         const wordExist = this.words.has(word);
         if (wordExist) {
