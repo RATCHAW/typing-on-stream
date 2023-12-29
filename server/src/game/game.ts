@@ -1,8 +1,8 @@
 import getRandomInterval from './randomInterval';
 import { generateWord } from './wordGenerator';
-import redisClient from '@/database/redisClient';
 import adjustDifficulty from './difficulty';
 import { EventEmitter } from 'events';
+import { nanoid } from 'nanoid';
 
 enum GameState {
     NotRunning = 'Game is not running',
@@ -46,7 +46,6 @@ class Game {
         }
 
         // Clear cached words
-
         this.words.clear();
 
         // Clear timeouts for each word
@@ -61,7 +60,7 @@ class Game {
         if (!this.running) {
             return;
         }
-        const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake, id } = adjustDifficulty(this.score);
+        const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake } = adjustDifficulty(this.score);
         this.wordGenerateTimoutId = setTimeout(
             async () => {
                 const generatedWord = generateWord({
@@ -77,13 +76,12 @@ class Game {
                 }
                 const wordAndDifficulties = {
                     word: generatedWord,
+                    id: nanoid(),
                     wordTimeout,
                     wordShake,
-                    id,
                 };
 
                 this.eventEmitter.emit('newWord', wordAndDifficulties);
-
                 this.wordsTimeouts.set(
                     generatedWord,
                     setTimeout(() => {
@@ -110,7 +108,6 @@ class Game {
             const timeout = this.wordsTimeouts.get(word);
             clearTimeout(timeout);
             this.wordsTimeouts.delete(word);
-
             this.words.delete(word);
         }
     }
