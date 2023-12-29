@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
 import redisClient from '@/database/redisClient';
 import Broadcaster from '@/database/models/broadcaster';
-// import { gameChatClient } from '@/twitch/chatClients';
 import Game from '@/game/game';
 import { ChatClient } from '@twurple/chat';
 
@@ -42,15 +41,15 @@ export async function handleGameOverlay(socket: Socket) {
                 }
             });
 
-            game.eventEmitter.on('destroyedWord', (word, score) => {
-                socket.emit('destroyedWord', { destroyedWord: word, newScore: score });
+            game.eventEmitter.on('destroyedWord', (wordAndDifficulties, score: number) => {
+                socket.emit('destroyedWord', { wordAndDifficulties, newScore: score });
             });
 
             game.eventEmitter.on('newWord', (wordAndDifficulties) => {
-                socket.emit('newWord', { wordAndDifficulties });
+                socket.emit('newWord', wordAndDifficulties);
             });
 
-            game.eventEmitter.on('gameOver', (status, word) => {
+            game.eventEmitter.on('gameOver', (status: string, word: number) => {
                 socket.emit('gameStatus', { status, word });
             });
 

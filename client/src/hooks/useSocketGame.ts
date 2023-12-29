@@ -42,17 +42,26 @@ export function useSocketGame() {
       }
     });
 
-    gameSocket.off('newWord').on('newWord', (data: { wordAndDifficulties: WordAndDifficulties }) => {
-      const { wordAndDifficulties } = data;
+    gameSocket.off('newWord').on('newWord', (wordAndDifficulties: WordAndDifficulties) => {
+      console.log(wordAndDifficulties);
       setWords((prevWords) => [...prevWords, wordAndDifficulties]);
     });
 
-    gameSocket.off('destroyedWord').on('destroyedWord', (data: { destroyedWord: string; newScore: number }) => {
-      const { destroyedWord, newScore } = data;
-
-      setScore(newScore);
-      setWords((words) => words.filter((word) => word.word !== destroyedWord));
-    });
+    gameSocket
+      .off('destroyedWord')
+      .on('destroyedWord', (data: { wordAndDifficulties: WordAndDifficulties; newScore: number }) => {
+        const { wordAndDifficulties, newScore } = data;
+        console.log(wordAndDifficulties);
+        if (wordAndDifficulties.toBeDestroyed === 0) {
+          setWords((words) => words.filter((word) => word.word !== wordAndDifficulties.word));
+        } else {
+          // update the word with the new toBeDestoryed value
+          setWords((words) =>
+            words.map((word) => (word.word === wordAndDifficulties.word ? wordAndDifficulties : word))
+          );
+        }
+        setScore(newScore);
+      });
 
     return () => {
       gameSocket.disconnect();

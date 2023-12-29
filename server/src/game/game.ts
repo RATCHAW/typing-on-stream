@@ -12,11 +12,22 @@ enum GameState {
     GameOver = 'Game over',
 }
 
-class Game {
-    private wordsTimeouts = new Map<string, NodeJS.Timeout>();
-    private words = new Set<string>();
-    private wordGenerateTimoutId: NodeJS.Timeout | null = null; // timeout id for the next generated word
+interface Word {
+    clientData: {
+        id: string;
+        word: string;
+        wordShake: boolean;
+        toBeDestroyed: number;
+        wordTimeout: number;
+    };
+    internalData: {
+        wordTimeoutId: NodeJS.Timeout;
+    };
+}
 
+class Game {
+    private words = new Map<string, Word>();
+    private wordGenerateTimoutId: NodeJS.Timeout | null = null; // timeout id for the next generated word
     private running: boolean = false;
     public score: number = 0;
     public channelUsername: string | undefined;
@@ -47,18 +58,19 @@ class Game {
         }
 
         // clear saved word and than clear timeouts for each word
-        this.words.clear();
-        this.wordsTimeouts.forEach((timeout) => {
-            clearTimeout(timeout);
+        this.words.forEach((word) => {
+            clearTimeout(word.internalData.wordTimeoutId);
         });
-        this.wordsTimeouts.clear();
+        this.words.clear();
         return word ? this.eventEmitter.emit('gameOver', { status: 'Game over', word }) : GameState.Stopped;
     }
 
     private runGameLoop(channel: string): void {
         if (!this.running) return;
 
-        const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake } = adjustDifficulty(this.score);
+        const { wordMinLength, wordMaxLength, wordTimeout, wordInterval, wordShake, toBeDestroyed } = adjustDifficulty(
+            this.score,
+        );
         this.wordGenerateTimoutId = setTimeout(
             () => {
                 const generatedWord = generateWord({
@@ -71,24 +83,25 @@ class Game {
                     return;
                 }
 
-                this.words.add(generatedWord);
+                const wordTimeoutId = setTimeout(() => {
+                    this.eventEmitter.emit('wordTimout', generatedWord);
+                    this.stopGame(generatedWord);
+                }, wordTimeout);
 
-                const wordAndDifficulties = {
-                    word: generatedWord,
+                const clientData = {
                     id: nanoid(),
-                    wordTimeout,
+                    word: generatedWord,
                     wordShake,
+                    toBeDestroyed,
+                    wordTimeout,
                 };
 
-                this.eventEmitter.emit('newWord', wordAndDifficulties);
-                this.wordsTimeouts.set(
-                    generatedWord,
-                    setTimeout(() => {
-                        this.eventEmitter.emit('wordTimout', generatedWord);
-                        this.stopGame(generatedWord);
-                    }, wordTimeout),
-                );
+                const internalData = {
+                    wordTimeoutId,
+                };
 
+                this.words.set(generatedWord, { clientData, internalData });
+                this.eventEmitter.emit('newWord', clientData);
                 this.runGameLoop(channel);
             },
             getRandomInterval(wordInterval.min, wordInterval.max),
@@ -98,14 +111,18 @@ class Game {
     async removeMatchedWords(word: string): Promise<void> {
         if (!this.running) return;
 
-        const wordExist = this.words.has(word);
+        //used to remove empty spaces added my 7TV exestension
+        const cleanString = word.split(' ')[0];
+        const wordExist = this.words.get(cleanString);
+        console.log(wordExist);
         if (wordExist) {
             this.score += 1;
-            this.eventEmitter.emit('destroyedWord', word, this.score);
-            const timeout = this.wordsTimeouts.get(word);
-            clearTimeout(timeout);
-            this.wordsTimeouts.delete(word);
-            this.words.delete(word);
+            wordExist.clientData.toBeDestroyed--;
+            if (wordExist.clientData.toBeDestroyed === 0) {
+                this.words.delete(cleanString);
+            }
+            this.eventEmitter.emit('destroyedWord', wordExist.clientData);
+            clearTimeout(wordExist.internalData.wordTimeoutId);
         }
     }
 }

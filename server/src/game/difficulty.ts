@@ -1,8 +1,7 @@
-import { nanoid } from 'nanoid';
-
 let wordDifficulty: number;
 let wordTimeout: number; // time you have to type the word
 let wordInterval: { min: number; max: number }; // time between words
+let toBeDestroyed: number; // how many times should the word be typed to be destroyed
 let wordMaxLength: number;
 let wordMinLength: number;
 let capitalizeWords: boolean; // capitalize some characters in the word
@@ -11,6 +10,7 @@ let wordShake: boolean; // make the word start shaking
 function adjustDifficulty(score: number) {
     if (score < 10) {
         wordDifficulty = 1;
+        toBeDestroyed = 2;
         wordTimeout = 20000;
         wordInterval = { min: 3000, max: 3500 };
         wordMaxLength = 5;
@@ -19,6 +19,7 @@ function adjustDifficulty(score: number) {
         wordShake = false;
     } else if (score < 20) {
         wordDifficulty = 2;
+        toBeDestroyed = 2;
         wordTimeout = 4500;
         wordInterval = { min: 2500, max: 3000 };
         wordMaxLength = 6;
@@ -27,6 +28,7 @@ function adjustDifficulty(score: number) {
         wordShake = true;
     } else {
         wordDifficulty = 3;
+        toBeDestroyed = 3;
         wordTimeout = 4000;
         wordInterval = { min: 2000, max: 2500 };
         wordMaxLength = 7;
@@ -36,6 +38,7 @@ function adjustDifficulty(score: number) {
     }
     return {
         wordDifficulty,
+        toBeDestroyed,
         wordTimeout,
         wordInterval,
         wordMaxLength,
