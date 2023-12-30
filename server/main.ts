@@ -10,17 +10,14 @@ const app = express();
 
 const server = app.listen(3000, async () => {
     logger.info('Server is running on port 3000');
-    connectChatClients();
-
-    new ServerSocket(server);
-
-    // connect to mongodb
-    mongoose.connect(env.MONGO_URL).then(() => {
-        logger.info('Connected to database');
-    });
 
     await client.connect().then(() => {
         logger.info('Connected to Redis');
         client.FLUSHALL();
+        mongoose.connect(env.MONGO_URL).then(async () => {
+            logger.info('Connected to database');
+            await connectChatClients();
+            new ServerSocket(server);
+        });
     });
 });
