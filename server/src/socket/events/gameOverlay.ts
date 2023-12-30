@@ -5,11 +5,13 @@ import Game from '@/game/game';
 import { ChatClient } from '@twurple/chat';
 
 export async function handleGameOverlay(socket: Socket) {
-    const workspace = socket.nsp.name;
-    const sessionId = workspace.split('/')[2];
+    const workspace = socket.nsp;
+    const sessionId = workspace.name.split('/')[2];
 
     const session = await redisClient.HGET('sessions', sessionId);
-    if (session) {
+    console.log(workspace.sockets.size);
+    if (workspace.sockets.size > 1) {
+        console.log('session already exists');
         socket.emit('session', {
             created: false,
             message: ' Your session is currently active in another window or tab',
@@ -26,7 +28,7 @@ export async function handleGameOverlay(socket: Socket) {
                 await redisClient.HSET('sessions', sessionId, broadcaster.username);
 
                 gameChatClient.onMessage(async (channel, user, message, msg) => {
-                    console.log('message Called');
+                    console.log(message);
                     game.removeMatchedWords(message);
                     if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
                         if (message == '!start') {
@@ -53,8 +55,10 @@ export async function handleGameOverlay(socket: Socket) {
                 });
 
                 socket.on('disconnect', async () => {
+                    console.log('disconnected');
                     gameChatClient.quit();
                     await redisClient.HDEL('sessions', sessionId);
+                    socket.removeAllListeners();
                 });
 
                 socket.emit('session', { created: true, message: 'session created' });

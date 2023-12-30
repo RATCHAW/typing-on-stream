@@ -17,7 +17,8 @@ const server = app.listen(3000, async () => {
         mongoose.connect(env.MONGO_URL).then(async () => {
             logger.info('Connected to database');
             await connectChatClients();
-            new ServerSocket(server);
         });
     });
+
+    new ServerSocket(server);
 });

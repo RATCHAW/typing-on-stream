@@ -5,7 +5,7 @@ import { memo } from 'react';
 const Word = memo(WordComponent);
 
 function Game() {
-  const { gameStatus, errorMsg, loading, loosingWord, words, score } = useSocketGame();
+  const { words } = useSocketGame();
 
   return (
     <div className="h-screen bg-black">
