@@ -114,7 +114,6 @@ class Game {
         //used to remove empty spaces added my 7TV exestension
         const cleanString = word.split(' ')[0];
         const wordExist = this.words.get(cleanString);
-        console.log(wordExist);
         if (wordExist) {
             this.score += 1;
             wordExist.clientData.toBeDestroyed--;
