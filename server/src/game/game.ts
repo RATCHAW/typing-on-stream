@@ -5,11 +5,11 @@ import { EventEmitter } from 'events';
 import { nanoid } from 'nanoid';
 
 enum GameState {
-    NotRunning = 'Game is not running',
-    Started = 'Game started',
-    AlreadyRunning = 'Game already running',
-    Stopped = 'Game stopped',
-    GameOver = 'Game over',
+    NotRunning = 'game is not running',
+    Started = 'started',
+    AlreadyRunning = 'game already running',
+    Stopped = 'stopped',
+    GameOver = 'over',
 }
 
 interface Word {
@@ -62,7 +62,9 @@ class Game {
             clearTimeout(word.internalData.wordTimeoutId);
         });
         this.words.clear();
-        return word ? this.eventEmitter.emit('gameOver', { status: 'Game over', word }) : GameState.Stopped;
+        return word
+            ? this.eventEmitter.emit('gameOver', { status: GameState.GameOver, word })
+            : this.eventEmitter.emit('gameOver', { status: GameState.Stopped });
     }
 
     private runGameLoop(channel: string): void {
@@ -84,7 +86,6 @@ class Game {
                 }
 
                 const wordTimeoutId = setTimeout(() => {
-                    this.eventEmitter.emit('wordTimout', generatedWord);
                     this.stopGame(generatedWord);
                 }, wordTimeout);
 

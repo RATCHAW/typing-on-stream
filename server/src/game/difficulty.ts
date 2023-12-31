@@ -11,8 +11,8 @@ function adjustDifficulty(score: number) {
     if (score < 10) {
         wordDifficulty = 1;
         toBeDestroyed = 2;
-        wordTimeout = 20000;
-        wordInterval = { min: 3000, max: 3500 };
+        wordTimeout = 5000;
+        wordInterval = { min: 1000, max: 1500 };
         wordMaxLength = 5;
         wordMinLength = 3;
         capitalizeWords = false;

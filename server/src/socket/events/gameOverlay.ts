@@ -33,11 +33,11 @@ export async function handleGameOverlay(socket: Socket) {
                     if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
                         if (message == '!start') {
                             const status = game.startGame(broadcaster.username);
-                            socket.emit('gameStatus', { status });
+                            socket.emit('gameStatus', status);
                         }
                         if (message == '!stop') {
                             const status = await game.stopGame();
-                            socket.emit('gameStatus', { status });
+                            socket.emit('gameStatus', status);
                         }
                     }
                 });
@@ -50,8 +50,8 @@ export async function handleGameOverlay(socket: Socket) {
                     socket.emit('newWord', wordAndDifficulties);
                 });
 
-                game.eventEmitter.on('gameOver', (status: string, word: number) => {
-                    socket.emit('gameStatus', { status, word });
+                game.eventEmitter.on('gameOver', (status: string, word?: number) => {
+                    word ? socket.emit('gameStatus', status, word) : socket.emit('gameStatus', status);
                 });
 
                 socket.on('disconnect', async () => {
