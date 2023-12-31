@@ -108,7 +108,7 @@ class Game {
         );
     }
 
-    async removeMatchedWords(word: string): Promise<void> {
+    async removeMatchedWords(word: string, user: string): Promise<void> {
         if (!this.running) return;
 
         //used to remove empty spaces added my 7TV exestension
@@ -120,7 +120,7 @@ class Game {
             if (wordExist.clientData.toBeDestroyed === 0) {
                 this.words.delete(cleanString);
             }
-            this.eventEmitter.emit('destroyedWord', wordExist.clientData);
+            this.eventEmitter.emit('destroyedWord', wordExist.clientData, this.score, user);
             clearTimeout(wordExist.internalData.wordTimeoutId);
         }
     }

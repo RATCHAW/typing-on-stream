@@ -29,7 +29,7 @@ export async function handleGameOverlay(socket: Socket) {
 
                 gameChatClient.onMessage(async (channel, user, message, msg) => {
                     console.log(message);
-                    game.removeMatchedWords(message);
+                    game.removeMatchedWords(message, msg.userInfo.displayName);
                     if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
                         if (message == '!start') {
                             const status = game.startGame(broadcaster.username);
@@ -42,8 +42,8 @@ export async function handleGameOverlay(socket: Socket) {
                     }
                 });
 
-                game.eventEmitter.on('destroyedWord', (wordAndDifficulties, score: number) => {
-                    socket.emit('destroyedWord', { wordAndDifficulties, newScore: score });
+                game.eventEmitter.on('destroyedWord', (wordAndDifficulties, score: number, user: string) => {
+                    socket.emit('destroyedWord', { wordAndDifficulties, newScore: score, user });
                 });
 
                 game.eventEmitter.on('newWord', (wordAndDifficulties) => {
