@@ -26,10 +26,17 @@ function Game() {
           <LoadingImg />
         </div>
       )}
-      {words &&
-        words.map((word) => {
-          return <Word word={word} key={word.id} />;
-        })}
+      {gameStatus === 'started' && (
+        <div>
+          <div>
+            {words &&
+              words.map((word) => {
+                return <Word word={word} key={word.id} />;
+              })}
+          </div>
+          <div className="h-2 w-full bg-red-600 absolute bottom-[88px]"></div>
+        </div>
+      )}
     </div>
   );
 }

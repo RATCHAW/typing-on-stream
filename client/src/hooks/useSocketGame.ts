@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { WordAndDifficulties } from 'types/word';
 
-type GameStatus = 'Started' | 'Stopped' | 'Over';
-
 export function useSocketGame() {
   const [gameStatus, setGameStatus] = useState<string>('stopped');
   const [errorMsg, setErrorMsg] = useState('');
@@ -20,11 +18,9 @@ export function useSocketGame() {
   useEffect(() => {
     gameSocket.connect();
     gameSocket.off('session').on('session', (data: { created: boolean; message: string }) => {
-      console.log(data);
       const { created, message } = data;
       if (created) {
         setLoading(false);
-        console.log(message);
       } else {
         setErrorMsg(message);
       }
@@ -35,13 +31,11 @@ export function useSocketGame() {
       if (status === 'over' || status === 'stopped' || status === 'started') {
         setWords([]);
         setGameStatus(status);
-        console.log(status);
         word && setLoosingWord(word);
       }
     });
 
     gameSocket.off('newWord').on('newWord', (wordAndDifficulties: WordAndDifficulties) => {
-      console.log(wordAndDifficulties);
       setWords((prevWords) => [...prevWords, wordAndDifficulties]);
     });
 
@@ -49,7 +43,6 @@ export function useSocketGame() {
       .off('destroyedWord')
       .on('destroyedWord', (data: { wordAndDifficulties: WordAndDifficulties; newScore: number; user: string }) => {
         const { wordAndDifficulties, newScore } = data;
-        console.log(wordAndDifficulties);
 
         // if word is destroyed remove it from the list
         if (wordAndDifficulties.toBeDestroyed === 0) {
