@@ -21,20 +21,21 @@ export async function handleGameOverlay(socket: Socket) {
         const broadcaster = await Broadcaster.findOne({ sessionId }).exec();
 
         if (broadcaster) {
+            await redisClient.HSET('sessions', sessionId, broadcaster.username);
             const game = new Game();
             const gameChatClient = new ChatClient({ channels: [broadcaster.username] });
             gameChatClient.connect();
             gameChatClient.onConnect(async () => {
-                await redisClient.HSET('sessions', sessionId, broadcaster.username);
-
                 gameChatClient.onMessage(async (channel, user, message, msg) => {
-                    console.log(message);
-                    game.removeMatchedWords(message, msg.userInfo.displayName);
+                    //used to remove empty spaces added by 7TV exestension
+                    const cleanMessage = message.split(' ')[0];
+                    console.log(cleanMessage);
+                    game.removeMatchedWords(cleanMessage, msg.userInfo.displayName);
                     if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
-                        if (message == '!start') {
+                        if (cleanMessage == '!start') {
                             game.startGame(broadcaster.username);
                         }
-                        if (message == '!stop') {
+                        if (cleanMessage == '!stop') {
                             game.stopGame();
                         }
                     }

@@ -112,14 +112,12 @@ class Game {
     async removeMatchedWords(word: string, user: string): Promise<void> {
         if (!this.running) return;
 
-        //used to remove empty spaces added my 7TV exestension
-        const cleanString = word.split(' ')[0];
-        const wordExist = this.words.get(cleanString);
+        const wordExist = this.words.get(word);
         if (wordExist) {
             this.score += 1;
             wordExist.clientData.toBeDestroyed--;
             if (wordExist.clientData.toBeDestroyed === 0) {
-                this.words.delete(cleanString);
+                this.words.delete(word);
             }
             this.eventEmitter.emit('destroyedWord', wordExist.clientData, this.score, user);
             clearTimeout(wordExist.internalData.wordTimeoutId);

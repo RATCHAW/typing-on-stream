@@ -11,8 +11,8 @@ function adjustDifficulty(score: number) {
     if (score < 10) {
         wordDifficulty = 1;
         toBeDestroyed = 2;
-        wordTimeout = 5000;
-        wordInterval = { min: 1000, max: 1500 };
+        wordTimeout = 7000;
+        wordInterval = { min: 1500, max: 2000 };
         wordMaxLength = 5;
         wordMinLength = 3;
         capitalizeWords = false;
@@ -21,7 +21,7 @@ function adjustDifficulty(score: number) {
         wordDifficulty = 2;
         toBeDestroyed = 2;
         wordTimeout = 4500;
-        wordInterval = { min: 2500, max: 3000 };
+        wordInterval = { min: 1000, max: 1500 };
         wordMaxLength = 6;
         wordMinLength = 4;
         capitalizeWords = false;
