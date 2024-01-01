@@ -33,14 +33,14 @@ class Game {
     public channelUsername: string | undefined;
     public eventEmitter: EventEmitter = new EventEmitter();
 
-    public startGame(channelUsername: string): string {
+    public startGame(channelUsername: string) {
         if (!this.running) {
             this.channelUsername = channelUsername;
             this.running = true;
             this.runGameLoop(channelUsername);
-            return GameState.Started;
+            this.eventEmitter.emit('gameStatus', GameState.Started);
         } else {
-            return GameState.AlreadyRunning;
+            this.eventEmitter.emit('gameStatus', GameState.AlreadyRunning);
         }
     }
 
@@ -63,8 +63,8 @@ class Game {
         });
         this.words.clear();
         return word
-            ? this.eventEmitter.emit('gameOver', { status: GameState.GameOver, word })
-            : this.eventEmitter.emit('gameOver', { status: GameState.Stopped });
+            ? this.eventEmitter.emit('gameStatus', GameState.GameOver, word)
+            : this.eventEmitter.emit('gameStatus', GameState.Stopped);
     }
 
     private runGameLoop(channel: string): void {
