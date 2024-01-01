@@ -4,4 +4,5 @@ export interface WordAndDifficulties {
   wordShake: boolean;
   toBeDestroyed: number;
   wordTimeout: number;
+  user: string;
 }
