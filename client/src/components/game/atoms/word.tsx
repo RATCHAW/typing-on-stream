@@ -15,7 +15,7 @@ export function Word({ word }: { word: WordAndDifficulties }) {
     <animated.div key={word.id} className="text-white absolute" style={props}>
       <div className="relative inline-flex items-center p-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg ">
         {word.word}
-        <span className="sr-only">Notifications</span>
+        <span className="sr-only"></span>
         <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
           {word.toBeDestroyed}
         </div>

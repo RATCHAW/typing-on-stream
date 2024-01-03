@@ -1,8 +1,9 @@
-import LogsList from '@/components/game/logsList';
-import { Word as WordComponent } from '@/components/game/word';
+import LogsList from '@/components/game/molecules/wordsLogs';
+import { Word as WordComponent } from '@/components/game/atoms/word';
 import LoadingImg from '@/components/shared/loadingImg';
 import { useSocketGame } from '@/hooks/useSocketGame';
 import { memo } from 'react';
+import LiveGame from '@/components/game/organisms/liveGame';
 
 const Word = memo(WordComponent);
 
@@ -11,7 +12,7 @@ function Game() {
   console.log(loading);
 
   return (
-    <div className="h-screen bg-black relative">
+    <div className="h-screen bg-black">
       {gameStatus === 'stopped' && !loading && (
         <div className="flex items-center justify-center h-screen text-white text-2xl font-mono">
           Waiting for game to start
@@ -26,17 +27,7 @@ function Game() {
           <LoadingImg />
         </div>
       )}
-      {gameStatus === 'started' && (
-        <div>
-          <div>
-            {words &&
-              words.map((word) => {
-                return <Word word={word} key={word.id} />;
-              })}
-          </div>
-          <div className="h-2 w-full bg-red-600 absolute bottom-[88px]"></div>
-        </div>
-      )}
+      {gameStatus === 'started' && <LiveGame words={words} />}
     </div>
   );
 }
