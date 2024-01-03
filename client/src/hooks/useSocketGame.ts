@@ -1,7 +1,7 @@
 import { socketGame } from '@/socket';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { WordAndDifficulties } from 'types/word';
+import { WordAndDifficulties, DestroyedWord } from 'types/word';
 
 export function useSocketGame() {
   const [gameStatus, setGameStatus] = useState<string>('stopped');
@@ -10,8 +10,13 @@ export function useSocketGame() {
   const [loosingWord, setLoosingWord] = useState('');
   const [score, setScore] = useState(0);
 
-  const [words, setWords] = useState<WordAndDifficulties[]>([]);
-  const [wordDistroyeLogs, setWordDistroyeLogs] = useState<any[]>([]);
+  const [words, setWords] = useState<Array<WordAndDifficulties | DestroyedWord>>([]);
+  const [wordDistroyedLogs, setWordDistroyedLogs] = useState<Array<{ user: string; word: string; id: string }>>([
+    { user: 'test', word: 'test', id: 'test' },
+    { user: 'sdfsdf', word: 'sdfdsf', id: 'dfsdfd' }
+    // Add more objects as needed
+  ]);
+
   const { sessionId } = useParams();
   const gameSocket = socketGame(sessionId!);
 
@@ -30,6 +35,7 @@ export function useSocketGame() {
       const { status, word } = data;
       if (status === 'over' || status === 'stopped' || status === 'started') {
         setWords([]);
+        setWordDistroyedLogs([]);
         setGameStatus(status);
         word && setLoosingWord(word);
       }
@@ -39,22 +45,26 @@ export function useSocketGame() {
       setWords((prevWords) => [...prevWords, wordAndDifficulties]);
     });
 
-    gameSocket
-      .off('destroyedWord')
-      .on('destroyedWord', (data: { wordAndDifficulties: WordAndDifficulties; newScore: number; user: string }) => {
-        const { wordAndDifficulties, newScore } = data;
+    gameSocket.off('destroyedWord').on('destroyedWord', (data: DestroyedWord) => {
+      const { wordAndDifficulties, newScore } = data;
 
-        // if word is destroyed remove it from the list
-        if (wordAndDifficulties.toBeDestroyed === 0) {
-          setWords((words) => words.filter((word) => word.word !== wordAndDifficulties.word));
-        } else {
-          setWords((words) =>
-            words.map((word) => (word.word === wordAndDifficulties.word ? wordAndDifficulties : word))
-          );
-        }
-        setWordDistroyeLogs((prevLogs) => [...prevLogs, { word: wordAndDifficulties.word, user: data.user }]);
-        setScore(newScore);
-      });
+      // if word is destroyed remove it from the list
+      if (wordAndDifficulties.toBeDestroyed === 0) {
+        setWords((words) => words.filter((word) => (word as WordAndDifficulties).word !== wordAndDifficulties.word));
+      } else {
+        setWords((words) =>
+          words.map((word) =>
+            (word as WordAndDifficulties).word === wordAndDifficulties.word ? wordAndDifficulties : word
+          )
+        );
+      }
+      setWordDistroyedLogs((prevLogs) => [
+        ...prevLogs,
+        { user: data.user, word: data.wordAndDifficulties.word, id: data.wordAndDifficulties.id }
+      ]);
+
+      setScore(newScore);
+    });
 
     return () => {
       gameSocket.disconnect();
@@ -68,6 +78,6 @@ export function useSocketGame() {
     loosingWord,
     score,
     words,
-    wordDistroyeLogs
+    wordDistroyedLogs
   };
 }

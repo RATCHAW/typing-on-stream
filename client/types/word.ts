@@ -4,5 +4,10 @@ export interface WordAndDifficulties {
   wordShake: boolean;
   toBeDestroyed: number;
   wordTimeout: number;
+}
+
+export interface DestroyedWord {
+  wordAndDifficulties: WordAndDifficulties;
+  newScore: number;
   user: string;
 }
