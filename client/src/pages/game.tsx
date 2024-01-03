@@ -8,11 +8,12 @@ import VerificationStep from '@/components/atoms/verificationStep';
 import catTyping from '/emotes/catTyping.gif';
 import CopyButton from '@/components/atoms/copyButton';
 import VerificationCode from '@/components/atoms/verificationCode';
+import Logo from '@/components/atoms/logo';
 
 function Game() {
   return (
-    <div className=" bg-background w-full h-screen space-y-3">
-      <div className="ml-2 space-y-4">
+    <div className=" bg-background w-full space-y-3">
+      <div className="ml-2 space-y-8 p-12">
         <div>
           <Leaderboard icon={<Twitch />} title="STREAMERS LEADERBOARD" />
         </div>
@@ -31,6 +32,9 @@ function Game() {
           <VerificationStep emoteSrc={catTyping} stepNumber={1}>
             type the verification code in chat to activate the session
           </VerificationStep>
+        </div>
+        <div>
+          <Logo />
         </div>
         <div>
           <VerificationCode code={'4444'} />
