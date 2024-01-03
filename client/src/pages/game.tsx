@@ -6,6 +6,7 @@ import Sword from '@/assets/icons/sword.svg?react';
 import Twitch from '@/assets/icons/twitch.svg?react';
 import VerificationStep from '@/components/atoms/verificationStep';
 import catTyping from '/emotes/catTyping.gif';
+import CopyButton from '@/components/atoms/copyButton';
 
 function Game() {
   return (
@@ -20,13 +21,18 @@ function Game() {
           <Word theme="third" />
         </div>
         <div className="space-y-2">
-          <LogLabel icon={<Sword />} text={`HAMID GOT THE WORD "WORD"`} />
-          <LogLabel icon={<Sword />} text={`HAMID GOT THE WORD "WORD"`} secondary />
+          <LogLabel icon={<Sword />}>HAMID GOT THE WORD "WORD"</LogLabel>
+          <LogLabel icon={<Sword />} secondary>
+            HAMID GOT THE WORD "WORD
+          </LogLabel>
         </div>
         <div>
           <VerificationStep emoteSrc={catTyping} stepNumber={1}>
             type the verification code in chat to activate the session
           </VerificationStep>
+        </div>
+        <div>
+          <CopyButton />
         </div>
         <div>
           <DeathLine />

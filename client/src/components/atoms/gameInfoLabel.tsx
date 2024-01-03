@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 interface logLabelProps {
   secondary?: boolean;
-  text: string;
+  children: React.ReactNode;
   icon: JSX.Element;
 }
 
-function logLabel({ secondary, text, icon }: logLabelProps) {
+function logLabel({ secondary, children, icon }: logLabelProps) {
   return (
     <div
       className={cn(
@@ -16,7 +16,7 @@ function logLabel({ secondary, text, icon }: logLabelProps) {
       )}
     >
       {icon}
-      <p>{text}</p>
+      <p>{children}</p>
     </div>
   );
 }
