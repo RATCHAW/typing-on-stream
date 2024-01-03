@@ -1,7 +1,7 @@
 import FourDigitCode from '@/components/verify/fourDigitCode';
 import ChannelNameInput from '@/components/verify/channelNameInput';
 import Instructions from '@/components/verify/instructions';
-import LoadingImg from '@/components/shared/loadingImg';
+// import LoadingImg from '@/components/atoms/loadingImg';
 import { useSocketVerify } from '@/hooks/useSocketVerify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,7 +30,7 @@ function Verify() {
           errorMsg={errorMsg}
         />
       )}
-      {loading && <LoadingImg />}
+      {/* {loading && <LoadingImg />} */}
       {code && <FourDigitCode code={code} />}
       <ToastContainer position="bottom-left" theme="colored" />
     </div>

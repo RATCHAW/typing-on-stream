@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'PressStart';
+  src: url('/fonts/PressStart2P-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+  line-height: normal;
+}
+
+.colorful {
+  background: rgb(250, 195, 55);
+  background: linear-gradient(130deg, rgba(250, 195, 55, 1) 20%, rgba(127, 243, 97, 1) 40%, rgba(55, 156, 250, 1) 70%);
+}

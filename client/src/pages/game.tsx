@@ -1,33 +1,30 @@
-import LogsList from '@/components/game/molecules/wordsLogs';
-import { Word as WordComponent } from '@/components/game/atoms/word';
-import LoadingImg from '@/components/shared/loadingImg';
-import { useSocketGame } from '@/hooks/useSocketGame';
-import { memo } from 'react';
-import LiveGame from '@/components/game/organisms/liveGame';
-
-const Word = memo(WordComponent);
+import DeathLine from '@/components/atoms/deathLine';
+import Leaderboard from '@/components/atoms/leaderboardCard';
+import LogLabel from '@/components/atoms/gameInfoLabel';
+import Word from '@/components/atoms/word';
+import Sword from '@/assets/icons/sword.svg?react';
+import Twitch from '@/assets/icons/twitch.svg?react';
 
 function Game() {
-  const { words, loading, gameStatus } = useSocketGame();
-  console.log(loading);
-
   return (
-    <div className="h-screen bg-black">
-      {gameStatus === 'stopped' && !loading && (
-        <div className="flex items-center justify-center h-screen text-white text-2xl font-mono">
-          Waiting for game to start
+    <div className=" bg-background w-full h-screen space-y-3">
+      <div className="ml-2 space-y-4">
+        <div>
+          <Leaderboard icon={<Twitch />} title="STREAMERS LEADERBOARD" />
         </div>
-      )}
-      {gameStatus === 'over' && (
-        <div className="flex items-center justify-center h-screen text-red-600 text-2xl font-mono">Game Over</div>
-      )}
-
-      {loading && (
-        <div className="flex items-center justify-center h-screen">
-          <LoadingImg />
+        <div className="space-y-4">
+          <Word />
+          <Word theme="second" />
+          <Word theme="third" />
         </div>
-      )}
-      {gameStatus === 'started' && <LiveGame words={words} />}
+        <div className="space-y-2">
+          <LogLabel icon={<Sword />} text={`HAMID GOT THE WORD "WORD"`} />
+          <LogLabel icon={<Sword />} text={`HAMID GOT THE WORD "WORD"`} secondary />
+        </div>
+        <div>
+          <DeathLine />
+        </div>
+      </div>
     </div>
   );
 }
