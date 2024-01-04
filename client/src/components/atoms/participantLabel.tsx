@@ -1,12 +1,15 @@
 import TrophyIcon from '@/assets/icons/trophy.svg?react';
 import { cn } from '@/lib/utils';
+import React from 'react';
 
 interface ParticipantLabelProps {
+  children: React.ReactNode;
+  score: number;
   colorized?: boolean;
   secondary?: boolean;
   trophy?: boolean;
 }
-function ParticipantLabel({ colorized, secondary, trophy }: ParticipantLabelProps) {
+function ParticipantLabel({ children, score, colorized, secondary, trophy }: ParticipantLabelProps) {
   return (
     <div
       className={cn('text-white p-[2px] rounded-lg border-solid bg-border text-[8px]  uppercase', {
@@ -21,9 +24,9 @@ function ParticipantLabel({ colorized, secondary, trophy }: ParticipantLabelProp
       >
         <div className="flex space-x-[6px] items-center">
           {trophy && <TrophyIcon />}
-          <div>streamer1</div>
+          <div>{children}</div>
         </div>
-        <span>100</span>
+        <span>{score}</span>
       </div>
     </div>
   );
