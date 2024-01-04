@@ -5,7 +5,7 @@ import Flag from '@/assets/icons/flag.svg?react';
 
 function ScenceInfo() {
   return (
-    <div className="ustify-between space-y-2">
+    <div className="space-y-2">
       <div className="flex justify-between">
         <LogLabel icon={<Sword />}>HAMID GOT THE WORD "WORD"</LogLabel>
         <LogLabel yellow icon={<Fire />}>
