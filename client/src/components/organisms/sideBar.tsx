@@ -26,6 +26,10 @@ function SideBar() {
             <ParticipantLabel secondary trophy score={1000}>
               MAADLOU
             </ParticipantLabel>
+          </Leaderboard>
+        </div>
+        <div>
+          <Leaderboard icon={<Chat />} title="chat leaderboard">
             <ParticipantLabel colorized trophy score={1000}>
               RATCHAW
             </ParticipantLabel>
@@ -35,14 +39,7 @@ function SideBar() {
             <ParticipantLabel secondary trophy score={1000}>
               MAADLOU
             </ParticipantLabel>
-          </Leaderboard>
-        </div>
-        <div>
-          <Leaderboard icon={<Chat />} title="chat leaderboard">
-            <ParticipantLabel colorized trophy score={1000}>
-              RATCHAW
-            </ParticipantLabel>
-            <ParticipantLabel trophy score={1000}>
+            <ParticipantLabel secondary trophy score={1000}>
               MAADLOU
             </ParticipantLabel>
             <ParticipantLabel secondary trophy score={1000}>
