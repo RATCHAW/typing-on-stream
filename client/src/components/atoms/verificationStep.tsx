@@ -3,12 +3,12 @@ import { cn } from '@/lib/utils';
 interface VerificationStepProps {
   emoteSrc: string;
   children: React.ReactNode;
-  stepNumber: number;
+
   active?: boolean;
   lowOpacity?: boolean;
 }
 
-function VerificationStep({ emoteSrc, children, stepNumber, active, lowOpacity }: VerificationStepProps) {
+function VerificationStep({ emoteSrc, children, active, lowOpacity }: VerificationStepProps) {
   return (
     <div className="flex flex-col items-center space-y-12">
       <div
@@ -22,8 +22,6 @@ function VerificationStep({ emoteSrc, children, stepNumber, active, lowOpacity }
           <p className="text-[10px] text-center">{children}</p>
         </div>
       </div>
-
-      <span className="text-[42px] text-[#212121]">{stepNumber}</span>
     </div>
   );
 }

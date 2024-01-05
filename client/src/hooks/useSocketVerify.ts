@@ -2,20 +2,19 @@
 import { useEffect, useState } from 'react';
 import { socketVerify } from '@/socket';
 
-export function useSocketVerify() {
-  const [channelName, setChannelNameName] = useState('');
-  const [code, setCode] = useState('');
+export default function useSocketVerify() {
+  const [channelName, setChannelName] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [sessionId, setSessionId] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showInput, setShowInput] = useState(true);
 
   useEffect(() => {
     socketVerify.connect();
 
     socketVerify.on('code', (data: { code: string }) => {
       const { code } = data;
-      setCode(code.toString());
+      setVerificationCode(code.toString());
       setLoading(false);
       socketVerify.off('broadcaster');
     });
@@ -23,7 +22,6 @@ export function useSocketVerify() {
     socketVerify.on('verified', (data: { sessionId: string }) => {
       const { sessionId } = data;
       setSessionId(sessionId);
-      setCode('');
 
       socketVerify.on('sessionChange', (data: { sessionId: string }) => {
         const { sessionId } = data;
@@ -32,10 +30,8 @@ export function useSocketVerify() {
       });
     });
 
-    socketVerify.on('error', (data: { error: string }) => {
-      const { error } = data;
-      setErrorMsg(error);
-      setShowInput(true);
+    socketVerify.on('error', () => {
+      setError(true);
       setLoading(false);
     });
 
@@ -43,15 +39,13 @@ export function useSocketVerify() {
       socketVerify.disconnect();
     };
   }, []);
-  function sendBroadcasterName(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function sendBroadcasterName() {
     if (channelName.length < 3 || channelName.length > 25) {
-      setErrorMsg('Broadcaster name must be between 3 and 25 characters');
+      setError(true);
       return;
     }
     if (socketVerify.connected) {
       setLoading(true);
-      setShowInput(false);
       socketVerify.emit('broadcaster', { broadcaster: channelName });
     } else {
       socketVerify.connect();
@@ -69,12 +63,11 @@ export function useSocketVerify() {
 
   return {
     channelName,
-    setChannelNameName,
-    code,
+    setChannelName,
+    verificationCode,
     sessionId,
-    errorMsg,
+    error,
     loading,
-    showInput,
     sendBroadcasterName,
     changeSessionId
   };
