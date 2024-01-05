@@ -1,5 +1,3 @@
-import ParticipantLabel from '../atoms/participantLabel';
-
 interface LeaderboardProps {
   icon: JSX.Element;
   title: string;

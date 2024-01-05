@@ -8,6 +8,7 @@ export default function useSocketVerify() {
   const [sessionId, setSessionId] = useState('');
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
 
   useEffect(() => {
     socketVerify.connect();
@@ -16,12 +17,14 @@ export default function useSocketVerify() {
       const { code } = data;
       setVerificationCode(code.toString());
       setLoading(false);
+      setActiveStep(2);
       socketVerify.off('broadcaster');
     });
 
     socketVerify.on('verified', (data: { sessionId: string }) => {
       const { sessionId } = data;
       setSessionId(sessionId);
+      setActiveStep(3);
 
       socketVerify.on('sessionChange', (data: { sessionId: string }) => {
         const { sessionId } = data;
@@ -69,6 +72,7 @@ export default function useSocketVerify() {
     error,
     loading,
     sendBroadcasterName,
-    changeSessionId
+    changeSessionId,
+    activeStep
   };
 }
