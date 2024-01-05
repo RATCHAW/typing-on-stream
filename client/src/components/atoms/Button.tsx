@@ -4,7 +4,7 @@ interface ButtonProps {
   children: React.ReactNode;
 }
 
-function CopyButton({ icon, onClick, children }: ButtonProps) {
+function Button({ icon, onClick, children }: ButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -16,4 +16,4 @@ function CopyButton({ icon, onClick, children }: ButtonProps) {
   );
 }
 
-export default CopyButton;
+export default Button;

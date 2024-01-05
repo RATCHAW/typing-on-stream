@@ -8,8 +8,17 @@ import VerificationCodeStep from '@/components/molecules/verificationCodeStep';
 import EnterChannelNameStep from '@/components/molecules/enterChannelNameStep';
 
 function Verify() {
-  const { channelName, setChannelName, verificationCode, sessionId, sendBroadcasterName, loading, error, activeStep } =
-    useSocketVerify();
+  const {
+    channelName,
+    setChannelName,
+    verificationCode,
+    sessionId,
+    sendBroadcasterName,
+    loading,
+    error,
+    activeStep,
+    changeSessionId
+  } = useSocketVerify();
 
   const handleCopy = (contentType: string) => {
     if (contentType === 'url') {
@@ -49,7 +58,12 @@ function Verify() {
           (activeStep === 2 && (
             <VerificationCodeStep verificationCode={verificationCode} onCopyButtonClick={() => handleCopy('code')} />
           )) ||
-          (activeStep === 3 && <GameSettionLink onCopyButtonClick={() => handleCopy('url')} />)
+          (activeStep === 3 && (
+            <GameSettionLink
+              onCopyButtonClick={() => handleCopy('url')}
+              onChangeButtonClicked={() => changeSessionId()}
+            />
+          ))
         )}
       </div>
       <div className="mb-12">
