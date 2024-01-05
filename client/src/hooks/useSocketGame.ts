@@ -1,7 +1,7 @@
 import { socketGame } from '@/socket';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { WordAndDifficulties, DestroyedWord } from 'types/word';
+import { WordAndDifficulties, DestroyedWord } from '@/types/word';
 
 export function useSocketGame() {
   const [gameStatus, setGameStatus] = useState<string>('stopped');

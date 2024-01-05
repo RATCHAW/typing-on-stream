@@ -42,9 +42,6 @@ function SideBar() {
             <ParticipantLabel secondary trophy score={1000}>
               MAADLOU
             </ParticipantLabel>
-            <ParticipantLabel secondary trophy score={1000}>
-              MAADLOU
-            </ParticipantLabel>
           </Leaderboard>
         </div>
       </div>

@@ -34,20 +34,20 @@ function Verify() {
         />
       </div>
       <div className="mb-12">
-        <p className="text-[8px] text-center leading-4">
-          for a better experience see <span className="text-[#FAC337] underline">the guide</span> <br /> on how to setup
-          the game in obs
+        <p className="text-[8px] text-center leading-4 text-[#767676]">
+          for a better experience see <span className="text-[#FAC337] underline cursor-pointer">the guide</span> <br />{' '}
+          on how to setup the game in obs
         </p>
       </div>
       <div className="flex space-x-8">
         <VerificationStep emoteSrc={catTyping} stepNumber={1} active>
-          enter your channel‘s name on twitch to get a verification code
+          enter your channel‘s <br /> name on twitch to get <br /> a verification code
         </VerificationStep>
         <VerificationStep emoteSrc={peepoBlush} stepNumber={2} lowOpacity>
-          type the verification code in chat to activate the session
+          type the verification code in chat to <br /> activate the session
         </VerificationStep>
         <VerificationStep emoteSrc={peepoCongrats} stepNumber={3} lowOpacity>
-          congrats you can play our game with your chat now
+          congrats you can play <br /> our game with your <br /> chat now
         </VerificationStep>
       </div>
     </div>

@@ -17,7 +17,7 @@ function VerificationStep({ emoteSrc, children, stepNumber, active, lowOpacity }
           'opacity-50': lowOpacity
         })}
       >
-        <div className="flex flex-col flex-grow justify-center rounded-2xl items-center space-y-4 bg-background px-12 py-8">
+        <div className="flex flex-col flex-grow justify-center rounded-2xl items-center space-y-4 bg-background px-8 py-12">
           <img src={emoteSrc} className="w-[58px] h-[58px]" alt="catTypingEmote" />
           <p className="text-[10px] text-center">{children}</p>
         </div>
