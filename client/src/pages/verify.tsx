@@ -4,12 +4,14 @@ import catTyping from '/emotes/catTyping.gif';
 import peepoBlush from '/emotes/peepoBlush.gif';
 import peepoCongrats from '/emotes/peepoCongrats.gif';
 import VerificationCode from '@/components/atoms/verificationCode';
-import CopyButton from '@/components/atoms/copyButton';
+import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/input';
 import Twitch from '@/assets/icons/twitch.svg?react';
 import Chain from '@/assets/icons/chain.svg?react';
 import { useState } from 'react';
 import HiddenInput from '@/components/atoms/hiddenInput';
+import Copy from '@/assets/icons/copy.svg?react';
+import Refresh from '@/assets/icons/refresh.svg?react';
 
 function Verify() {
   const [channelName, setChannelName] = useState('');
@@ -23,7 +25,8 @@ function Verify() {
         <HiddenInput icon={<Chain />} />
         <div className="flex  items-center space-x-[6px] max-h-[52px]">
           <VerificationCode code={'1234'} />
-          <CopyButton />
+          <Button icon={<Copy className="w-5 h-5" />}>copy url</Button>
+          <Button icon={<Refresh className="w-5 h-5" />}>change</Button>
         </div>
 
         <Input
