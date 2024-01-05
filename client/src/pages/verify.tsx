@@ -6,6 +6,7 @@ import StepsCards from '@/components/molecules/stepsCards';
 import GameSettionLink from '@/components/molecules/hiddenInputStep';
 import VerificationCodeStep from '@/components/molecules/verificationCodeStep';
 import EnterChannelNameStep from '@/components/molecules/enterChannelNameStep';
+import Instructions from '@/components/organisms/instructions';
 
 function Verify() {
   const {
@@ -67,10 +68,7 @@ function Verify() {
         )}
       </div>
       <div className="mb-12">
-        <p className="text-[8px] text-center leading-4 text-[#767676]">
-          for a better experience see <span className="text-[#FAC337] underline cursor-pointer">the guide</span> <br />
-          on how to setup the game in obs
-        </p>
+        <Instructions />
       </div>
       <div>
         <StepsCards activeStep={activeStep} />
