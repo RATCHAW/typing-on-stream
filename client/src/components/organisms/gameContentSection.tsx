@@ -1,4 +1,4 @@
-import { useSocketGame } from '@/hooks/useSocketGame';
+import { useSocketGame } from '@/providers/game-provider';
 import DeathLine from '../atoms/deathLine';
 import PlayGame from './playGame';
 import ScenceInfo from './scenceInfo';

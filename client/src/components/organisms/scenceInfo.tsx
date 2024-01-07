@@ -2,7 +2,7 @@ import Sword from '@/assets/icons/sword.svg?react';
 import LogLabel from '@/components/atoms/gameInfoLabel';
 import Fire from '@/assets/icons/fire.svg?react';
 import Flag from '@/assets/icons/flag.svg?react';
-import { useSocketGame } from '@/hooks/useSocketGame';
+import { useSocketGame } from '@/providers/game-provider';
 
 function ScenceInfo() {
   const { currentScore } = useSocketGame();
