@@ -1,5 +1,5 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../shadcn/carousel';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../shadcn/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../shadcn/dialog';
 import firstStep from '/images/obs-instructions/first-step.png';
 import secondStep from '/images/obs-instructions/second-step.png';
 import thirdStep from '/images/obs-instructions/third-step.png';

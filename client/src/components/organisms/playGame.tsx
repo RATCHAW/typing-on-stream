@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Word as WordComponent } from '@/components/atoms/word';
 
 const Word = memo(WordComponent);
