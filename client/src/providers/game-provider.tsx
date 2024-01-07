@@ -60,6 +60,7 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
         setWords([]);
         setWordDistroyedLogs([]);
         setGameStatus(status);
+        setCurrentScore(0);
         word && setLoosingWord(word);
       }
     });

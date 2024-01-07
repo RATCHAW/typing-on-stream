@@ -1,5 +1,5 @@
 import Logo from '@/components/atoms/logo';
-import useSocketVerify from '@/hooks/useSocketVerify';
+import { useSocketVerify } from '@/providers/verification-provider';
 import Loading from '@/assets/icons/loading.svg?react';
 import FooterTag from '@/components/atoms/footerTags';
 import StepsCards from '@/components/molecules/stepsCards';
