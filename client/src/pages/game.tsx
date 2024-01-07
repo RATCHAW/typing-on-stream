@@ -1,11 +1,11 @@
-import GameLive from '@/components/organisms/gameLive';
+import GameContentSection from '@/components/organisms/gameContentSection';
 import SideBar from '@/components/organisms/sideBar';
 
 function Game() {
   return (
-    <div className="flex bg-background h-screen space-x-8 p-8">
+    <div className="flex bg-background h-screen space-x-6 p-5">
       <SideBar />
-      <GameLive />
+      <GameContentSection />
     </div>
   );
 }

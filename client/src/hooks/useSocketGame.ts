@@ -8,7 +8,7 @@ export function useSocketGame() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [loosingWord, setLoosingWord] = useState('');
-  const [score, setScore] = useState(0);
+  const [currentScore, setCurrentScore] = useState(0);
 
   const [words, setWords] = useState<Array<WordAndDifficulties | DestroyedWord>>([]);
   const [wordDistroyedLogs, setWordDistroyedLogs] = useState<Array<{ user: string; word: string; id: string }>>([
@@ -63,7 +63,7 @@ export function useSocketGame() {
         { user: data.user, word: data.wordAndDifficulties.word, id: data.wordAndDifficulties.id }
       ]);
 
-      setScore(newScore);
+      setCurrentScore(newScore);
     });
 
     return () => {
@@ -76,7 +76,7 @@ export function useSocketGame() {
     errorMsg,
     loading,
     loosingWord,
-    score,
+    currentScore,
     words,
     wordDistroyedLogs
   };
