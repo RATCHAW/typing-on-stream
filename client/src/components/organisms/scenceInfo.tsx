@@ -5,15 +5,17 @@ import Flag from '@/assets/icons/flag.svg?react';
 import { useSocketGame } from '@/providers/game-provider';
 
 function ScenceInfo() {
-  const { currentScore } = useSocketGame();
+  const { currentScore, wordDistroyedLogs } = useSocketGame();
 
   return (
     <div className="flex justify-between">
       <div className="space-y-2">
-        <LogLabel icon={<Sword />}>HAMID GOT THE WORD "WORD"</LogLabel>
-        <LogLabel icon={<Sword />} secondary>
-          HAMID GOT THE WORD "WORD"
-        </LogLabel>
+        {wordDistroyedLogs &&
+          wordDistroyedLogs.slice(0, 2).map((log, index) => (
+            <LogLabel key={`${log.id}${index}${log.user}`} icon={<Sword />} secondary={index === 1}>
+              {log.user} GOT THE WORD "{log.word}"
+            </LogLabel>
+          ))}
       </div>
       <div className="flex flex-col items-end space-y-2">
         <LogLabel yellow icon={<Fire />}>

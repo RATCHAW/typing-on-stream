@@ -34,14 +34,9 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
   const [currentScore, setCurrentScore] = useState(0);
 
   const [words, setWords] = useState<Array<WordAndDifficulties | DestroyedWord>>([]);
-  const [wordDistroyedLogs, setWordDistroyedLogs] = useState<Array<{ user: string; word: string; id: string }>>([
-    { user: 'test', word: 'test', id: 'test' },
-    { user: 'sdfsdf', word: 'sdfdsf', id: 'dfsdfd' }
-    // Add more objects as needed
-  ]);
+  const [wordDistroyedLogs, setWordDistroyedLogs] = useState<Array<{ user: any; word: string; id: string }>>([]);
 
-  const { sessionId } = useParams();
-  const gameSocket = socketGame(sessionId!);
+  const gameSocket = socketGame;
 
   useEffect(() => {
     gameSocket.connect();
@@ -77,6 +72,7 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
 
     gameSocket.off('destroyedWord').on('destroyedWord', (data: DestroyedWord) => {
       const { wordAndDifficulties, newScore } = data;
+      console.log(data.user);
       console.log(wordAndDifficulties, 'destroyedWord');
       // if word is destroyed remove it from the list
       if (wordAndDifficulties.toBeDestroyed === 0) {
@@ -90,10 +86,16 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
           )
         );
       }
-      setWordDistroyedLogs((prevLogs) => [
-        ...prevLogs,
-        { user: data.user, word: data.wordAndDifficulties.word, id: data.wordAndDifficulties.id }
-      ]);
+      setWordDistroyedLogs((prevLogs) => {
+        return [
+          {
+            user: data.user,
+            word: wordAndDifficulties.word,
+            id: wordAndDifficulties.id
+          },
+          ...prevLogs
+        ];
+      });
 
       setCurrentScore(newScore);
     });
