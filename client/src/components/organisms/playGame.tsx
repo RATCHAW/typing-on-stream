@@ -1,7 +1,10 @@
 import { memo } from 'react';
 import { Word as WordComponent } from '@/components/atoms/word';
 
-const Word = memo(WordComponent);
+const Word = memo(
+  WordComponent,
+  (prevProps, nextProps) => prevProps.word.toBeDestroyed === nextProps.word.toBeDestroyed
+);
 
 function PlayGame({ words }: { words: any }) {
   return (

@@ -1,7 +1,7 @@
 // SocketGameContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { socketGame } from '@/socket';
-import { DestroyedWord, WordAndDifficulties } from '@/types/word';
+import { DestroyedWord, WordAndDifficulties, WordTheme } from '@/types/word';
 import { useParams } from 'react-router-dom';
 
 interface GameProviderState {
@@ -66,19 +66,27 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
     });
 
     gameSocket.off('newWord').on('newWord', (wordAndDifficulties: WordAndDifficulties) => {
-      setWords((prevWords) => [...prevWords, wordAndDifficulties]);
+      function getRandomTheme() {
+        const themes = ['first', 'second', 'third'];
+        const randomIndex = Math.floor(Math.random() * themes.length);
+        return themes[randomIndex] as WordTheme;
+      }
+      console.log(wordAndDifficulties, 'newWord');
+      setWords((prevWords) => [...prevWords, { ...wordAndDifficulties, theme: getRandomTheme() }]);
     });
 
     gameSocket.off('destroyedWord').on('destroyedWord', (data: DestroyedWord) => {
       const { wordAndDifficulties, newScore } = data;
-
+      console.log(wordAndDifficulties, 'destroyedWord');
       // if word is destroyed remove it from the list
       if (wordAndDifficulties.toBeDestroyed === 0) {
         setWords((words) => words.filter((word) => (word as WordAndDifficulties).word !== wordAndDifficulties.word));
       } else {
         setWords((words) =>
           words.map((word) =>
-            (word as WordAndDifficulties).word === wordAndDifficulties.word ? wordAndDifficulties : word
+            (word as WordAndDifficulties).word === wordAndDifficulties.word
+              ? { ...word, toBeDestroyed: wordAndDifficulties.toBeDestroyed } // Replace 'newValue' with the updated value
+              : word
           )
         );
       }

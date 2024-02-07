@@ -7,20 +7,12 @@ export function getRandomXCoordinate() {
   return Math.floor(Math.random() * (window.innerWidth - offScreenWidth));
 }
 
-function getRandomTheme() {
-  const themes = ['first', 'second', 'third'];
-  const randomIndex = Math.floor(Math.random() * themes.length);
-  return themes[randomIndex];
-}
-
 interface WordProps {
-  theme?: string;
   word: WordAndDifficulties;
 }
 
 export function Word({ word }: WordProps) {
-  const theme = getRandomTheme();
-
+  const theme = word.theme;
   const [props] = useSpring(() => ({
     from: { y: 0, x: getRandomXCoordinate() },
     to: { y: window.innerHeight - 230 },

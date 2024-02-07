@@ -1,8 +1,6 @@
 // SocketGameContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { socketGame, socketVerify } from '@/socket';
-import { DestroyedWord, WordAndDifficulties } from '@/types/word';
-import { useParams } from 'react-router-dom';
+import { socketVerify } from '@/socket';
 
 interface verifiyProviderState {
   channelName: string;
