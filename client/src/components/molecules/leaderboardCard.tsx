@@ -1,7 +1,7 @@
 interface LeaderboardProps {
   icon: JSX.Element;
   title: string;
-  children: JSX.Element[];
+  children: JSX.Element[] | JSX.Element;
 }
 
 function Leaderboard({ icon, title, children }: LeaderboardProps) {
@@ -12,7 +12,7 @@ function Leaderboard({ icon, title, children }: LeaderboardProps) {
         <h2 className="text-[10px]">{title}</h2>
       </div>
 
-      <div className="my-5 mx-3 space-y-2">{children}</div>
+      <div className="my-5  mx-3 space-y-2">{children}</div>
     </div>
   );
 }

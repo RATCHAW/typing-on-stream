@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { socketGame } from '@/socket';
 import { DestroyedWord, WordAndDifficulties, WordTheme } from '@/types/word';
-import { useParams } from 'react-router-dom';
 
 interface GameProviderState {
   gameStatus: string;
@@ -12,6 +11,7 @@ interface GameProviderState {
   currentScore: number;
   words: Array<WordAndDifficulties | DestroyedWord>;
   wordDistroyedLogs: Array<{ user: string; word: string; id: string }>;
+  chatLeaderboard: Array<{ user: string; score: number }>;
 }
 
 const initialState: GameProviderState = {
@@ -21,7 +21,8 @@ const initialState: GameProviderState = {
   loosingWord: '',
   currentScore: 0,
   words: [],
-  wordDistroyedLogs: []
+  wordDistroyedLogs: [],
+  chatLeaderboard: []
 };
 
 const SocketGameContext = createContext<GameProviderState>(initialState);
@@ -32,9 +33,9 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(true);
   const [loosingWord, setLoosingWord] = useState('');
   const [currentScore, setCurrentScore] = useState(0);
-
   const [words, setWords] = useState<Array<WordAndDifficulties | DestroyedWord>>([]);
   const [wordDistroyedLogs, setWordDistroyedLogs] = useState<Array<{ user: any; word: string; id: string }>>([]);
+  const [chatLeaderboard, setChatLeaderboard] = useState<Array<{ user: string; score: number }>>([]);
 
   const gameSocket = socketGame;
 
@@ -72,8 +73,17 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
 
     gameSocket.off('destroyedWord').on('destroyedWord', (data: DestroyedWord) => {
       const { wordAndDifficulties, newScore } = data;
-      console.log(data.user);
-      console.log(wordAndDifficulties, 'destroyedWord');
+
+      setChatLeaderboard((prevLeaderboard) => {
+        const userIndex = prevLeaderboard.findIndex((entry) => entry.user === data.user);
+        if (userIndex !== -1) {
+          prevLeaderboard[userIndex].score++;
+        } else {
+          prevLeaderboard.push({ user: data.user, score: 1 });
+        }
+        return prevLeaderboard;
+      });
+
       // if word is destroyed remove it from the list
       if (wordAndDifficulties.toBeDestroyed === 0) {
         setWords((words) => words.filter((word) => (word as WordAndDifficulties).word !== wordAndDifficulties.word));
@@ -114,7 +124,8 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
         loosingWord,
         currentScore,
         words,
-        wordDistroyedLogs
+        wordDistroyedLogs,
+        chatLeaderboard
       }}
     >
       {children}

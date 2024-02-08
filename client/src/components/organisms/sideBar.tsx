@@ -4,10 +4,12 @@ import Leaderboard from '../molecules/leaderboardCard';
 import Twitch from '@/assets/icons/twitch.svg?react';
 import Chat from '@/assets/icons/chat.svg?react';
 import CamBox from '../atoms/camBox';
+import { useSocketGame } from '@/providers/game-provider';
 
 function SideBar() {
+  const { chatLeaderboard } = useSocketGame();
   return (
-    <div className="flex flex-col w-fit">
+    <div className="flex flex-col">
       <div className="flex justify-center mt-7 mb-8">
         <Logo />
       </div>
@@ -30,18 +32,24 @@ function SideBar() {
         </div>
         <div>
           <Leaderboard icon={<Chat />} title="chat leaderboard">
-            <ParticipantLabel colorized trophy score={1000}>
-              RATCHAW
-            </ParticipantLabel>
-            <ParticipantLabel trophy score={1000}>
-              MAADLOU
-            </ParticipantLabel>
-            <ParticipantLabel secondary trophy score={1000}>
-              MAADLOU
-            </ParticipantLabel>
-            <ParticipantLabel secondary trophy score={1000}>
-              MAADLOU
-            </ParticipantLabel>
+            <>
+              {chatLeaderboard.slice(0, 4).map((participant, index) => (
+                <ParticipantLabel
+                  key={index}
+                  trophy
+                  colorized={index === 0}
+                  secondary={1 < index}
+                  score={participant.score}
+                >
+                  {participant.user}
+                </ParticipantLabel>
+              ))}
+              {[...Array(4 - chatLeaderboard.length)].map((_, index) => (
+                <ParticipantLabel key={index} trophy score={0}>
+                  Chatter
+                </ParticipantLabel>
+              ))}
+            </>
           </Leaderboard>
         </div>
       </div>

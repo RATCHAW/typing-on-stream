@@ -8,11 +8,12 @@ interface ParticipantLabelProps {
   colorized?: boolean;
   secondary?: boolean;
   trophy?: boolean;
+  className?: string;
 }
-function ParticipantLabel({ children, score, colorized, secondary, trophy }: ParticipantLabelProps) {
+function ParticipantLabel({ children, score, colorized, secondary, trophy, className }: ParticipantLabelProps) {
   return (
     <div
-      className={cn('text-white p-[2px] rounded-lg border-solid bg-border text-[8px]  uppercase', {
+      className={cn('text-white p-[2px] rounded-lg border-solid bg-border text-[8px]  uppercase', className, {
         colorful: colorized,
         'text-secondary': secondary
       })}
