@@ -3,6 +3,7 @@ import { generateWord } from './wordGenerator';
 import adjustDifficulty from './difficulty';
 import { EventEmitter } from 'events';
 import { nanoid } from 'nanoid';
+import { LeaderBoardStoring } from './leaderboard';
 
 enum GameState {
     NotRunning = 'game is not running',
@@ -48,6 +49,7 @@ class Game {
         if (!this.running) {
             return GameState.NotRunning;
         }
+        LeaderBoardStoring(this.channelUsername!, this.score);
         this.running = false;
         this.score = 0;
 
