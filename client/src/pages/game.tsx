@@ -1,33 +1,22 @@
-import LogsList from '@/components/game/molecules/wordsLogs';
-import { Word as WordComponent } from '@/components/game/atoms/word';
-import LoadingImg from '@/components/shared/loadingImg';
-import { useSocketGame } from '@/hooks/useSocketGame';
-import { memo } from 'react';
-import LiveGame from '@/components/game/organisms/liveGame';
-
-const Word = memo(WordComponent);
+import GameContentSection from '@/components/organisms/gameContentSection';
+import SideBar from '@/components/organisms/sideBar';
+import Loading from '@/assets/icons/loading.svg?react';
+import { useSocketGame } from '@/providers/game-provider';
 
 function Game() {
-  const { words, loading, gameStatus } = useSocketGame();
-  console.log(loading);
-
+  const { loading } = useSocketGame();
   return (
-    <div className="h-screen bg-black">
-      {gameStatus === 'stopped' && !loading && (
-        <div className="flex items-center justify-center h-screen text-white text-2xl font-mono">
-          Waiting for game to start
+    <div className="h-screen  bg-background">
+      {!loading ? (
+        <div className="flex bg-background space-x-6 p-5">
+          <SideBar />
+          <GameContentSection />
+        </div>
+      ) : (
+        <div className="flex justify-center items-center h-screen ">
+          <Loading />
         </div>
       )}
-      {gameStatus === 'over' && (
-        <div className="flex items-center justify-center h-screen text-red-600 text-2xl font-mono">Game Over</div>
-      )}
-
-      {loading && (
-        <div className="flex items-center justify-center h-screen">
-          <LoadingImg />
-        </div>
-      )}
-      {gameStatus === 'started' && <LiveGame words={words} />}
     </div>
   );
 }

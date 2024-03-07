@@ -3,6 +3,7 @@ import { generateWord } from './wordGenerator';
 import adjustDifficulty from './difficulty';
 import { EventEmitter } from 'events';
 import { nanoid } from 'nanoid';
+import { LeaderBoardStoring, broadcasterHighestScore } from './leaderboard';
 
 enum GameState {
     NotRunning = 'game is not running',
@@ -30,14 +31,23 @@ class Game {
     private wordGenerateTimoutId: NodeJS.Timeout | null = null; // timeout id for the next generated word
     private running: boolean = false;
     public score: number = 0;
-    public channelUsername: string | undefined;
+    public highestScore: number = 0;
+    public channelUsername: string;
     public eventEmitter: EventEmitter = new EventEmitter();
 
-    public startGame(channelUsername: string) {
+    constructor(channelUsername: string) {
+        this.channelUsername = channelUsername;
+    }
+
+    public async getHighestScore() {
+        this.highestScore = await broadcasterHighestScore(this.channelUsername);
+        return this.highestScore;
+    }
+
+    public async startGame() {
         if (!this.running) {
-            this.channelUsername = channelUsername;
             this.running = true;
-            this.runGameLoop(channelUsername);
+            this.runGameLoop(this.channelUsername);
             this.eventEmitter.emit('gameStatus', GameState.Started);
         } else {
             this.eventEmitter.emit('gameStatus', GameState.AlreadyRunning);
@@ -48,6 +58,7 @@ class Game {
         if (!this.running) {
             return GameState.NotRunning;
         }
+        LeaderBoardStoring(this.channelUsername!, this.score);
         this.running = false;
         this.score = 0;
 

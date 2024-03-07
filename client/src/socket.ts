@@ -1,13 +1,12 @@
 import io from 'socket.io-client';
 
-// let { sessionId } = useParams();
-
 const apiUrl = 'http://localhost:3000';
 
 const socketVerify = io(`${apiUrl}/verify`, { autoConnect: false });
 
-const socketGame = (sessionId: string) => {
-  return io(`${apiUrl}/game/${sessionId}`);
-};
+const currentURL = window.location.href;
+const lastSegment = currentURL.substring(currentURL.lastIndexOf('/') + 1);
+
+const socketGame = io(`${apiUrl}/game/${lastSegment}`);
 
 export { socketVerify, socketGame };
