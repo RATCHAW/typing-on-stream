@@ -7,7 +7,7 @@ import CamBox from '../atoms/camBox';
 import { useSocketGame } from '@/providers/game-provider';
 
 function SideBar() {
-  const { chatLeaderboard } = useSocketGame();
+  const { chatLeaderboard, broadcastersLeaderboard, highestScore } = useSocketGame();
   return (
     <div className="flex flex-col">
       <div className="flex justify-center mt-7 mb-8">
@@ -19,15 +19,24 @@ function SideBar() {
         </div>
         <div>
           <Leaderboard icon={<Twitch />} title="streamers leaderboard">
-            <ParticipantLabel colorized trophy score={1000}>
-              RATCHAW
-            </ParticipantLabel>
-            <ParticipantLabel trophy score={1000}>
-              MAADLOU
-            </ParticipantLabel>
-            <ParticipantLabel secondary trophy score={1000}>
-              MAADLOU
-            </ParticipantLabel>
+            <>
+              {broadcastersLeaderboard.map((participant, index) => (
+                <ParticipantLabel
+                  key={index}
+                  trophy
+                  colorized={index === 0}
+                  secondary={1 < index}
+                  score={participant.score}
+                >
+                  {participant.value}
+                </ParticipantLabel>
+              ))}
+              {[...Array(3 - broadcastersLeaderboard.length)].map((_, index) => (
+                <ParticipantLabel key={index} trophy score={0}>
+                  Streamer
+                </ParticipantLabel>
+              ))}
+            </>
           </Leaderboard>
         </div>
         <div>

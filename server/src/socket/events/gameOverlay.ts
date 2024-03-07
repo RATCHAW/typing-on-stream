@@ -3,6 +3,7 @@ import redisClient from '@/database/redisClient';
 import Broadcaster from '@/database/models/broadcaster';
 import Game from '@/game/game';
 import { ChatClient } from '@twurple/chat';
+import { leaderBoardRetrieving, broadcasterHighestScore } from '@/game/leaderboard';
 
 export async function handleGameOverlay(socket: Socket) {
     const workspace = socket.nsp;
@@ -40,6 +41,9 @@ export async function handleGameOverlay(socket: Socket) {
                         }
                     }
                 });
+
+                const highestScore = await broadcasterHighestScore(broadcaster.username);
+                socket.emit('leaderboard', game.highestScore, highestScore);
 
                 game.eventEmitter.on('destroyedWord', (wordAndDifficulties, score: number, user: string) => {
                     socket.emit('destroyedWord', { wordAndDifficulties, newScore: score, user });

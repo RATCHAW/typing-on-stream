@@ -10,12 +10,12 @@ export const LeaderBoardStoring = async (broadcasterUsername: string, score: num
     }
 };
 
-export const LeaderBoardRetrieving = async () => {
-    const leaderboard = await redisClient.zRange('leaderboard', 0, 9);
+export const leaderBoardRetrieving = async () => {
+    const leaderboard = await redisClient.zRangeWithScores('leaderboard', 0, 9);
     return leaderboard;
 };
 
-export const broadcasterLeaderBoard = async (broadcasterUsername: string) => {
+export const broadcasterHighestScore = async (broadcasterUsername: string): Promise<number> => {
     const score = await redisClient.zScore('leaderboard', broadcasterUsername);
-    return score;
+    return score ?? 0;
 };

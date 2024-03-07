@@ -12,6 +12,8 @@ interface GameProviderState {
   words: Array<WordAndDifficulties | DestroyedWord>;
   wordDistroyedLogs: Array<{ user: string; word: string; id: string }>;
   chatLeaderboard: Array<{ user: string; score: number }>;
+  broadcastersLeaderboard: Array<{ value: string; score: number }>;
+  highestScore: number;
 }
 
 const initialState: GameProviderState = {
@@ -22,7 +24,9 @@ const initialState: GameProviderState = {
   currentScore: 0,
   words: [],
   wordDistroyedLogs: [],
-  chatLeaderboard: []
+  chatLeaderboard: [],
+  broadcastersLeaderboard: [],
+  highestScore: 0
 };
 
 const SocketGameContext = createContext<GameProviderState>(initialState);
@@ -36,11 +40,21 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
   const [words, setWords] = useState<Array<WordAndDifficulties | DestroyedWord>>([]);
   const [wordDistroyedLogs, setWordDistroyedLogs] = useState<Array<{ user: any; word: string; id: string }>>([]);
   const [chatLeaderboard, setChatLeaderboard] = useState<Array<{ user: string; score: number }>>([]);
+  const [broadcastersLeaderboard, setBroadcastersLeaderboard] = useState<Array<{ value: string; score: number }>>([]);
+  const [highestScore, setHighestScore] = useState(0);
 
   const gameSocket = socketGame;
 
   useEffect(() => {
     gameSocket.connect();
+
+    gameSocket
+      .off('leaderboard')
+      .on('leaderboard', (leaderboard: Array<{ value: string; score: number }>, highestScore: number) => {
+        setBroadcastersLeaderboard(leaderboard);
+        setHighestScore(highestScore);
+      });
+
     gameSocket.off('session').on('session', (data: { created: boolean; message: string }) => {
       const { created, message } = data;
       if (created) {
@@ -108,6 +122,9 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
       });
 
       setCurrentScore(newScore);
+      if (newScore > highestScore) {
+        setHighestScore(newScore);
+      }
     });
 
     return () => {
@@ -125,7 +142,9 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
         currentScore,
         words,
         wordDistroyedLogs,
-        chatLeaderboard
+        chatLeaderboard,
+        broadcastersLeaderboard,
+        highestScore
       }}
     >
       {children}

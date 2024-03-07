@@ -15,7 +15,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "server": "tsx main.ts",
-        "watch": "tsx main.ts --watch"
+        "watch": "tsx watch main.ts"
     },
     "keywords": [],
     "author": "",
