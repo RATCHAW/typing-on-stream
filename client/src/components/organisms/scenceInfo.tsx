@@ -19,7 +19,7 @@ function ScenceInfo() {
       </div>
       <div className="flex flex-col items-end space-y-2">
         <LogLabel yellow icon={<Fire />}>
-          top score : {highestScore}
+          top score : {highestScore || 0}
         </LogLabel>
         <LogLabel icon={<Flag />}>current score : {currentScore}</LogLabel>
       </div>

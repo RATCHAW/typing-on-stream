@@ -32,15 +32,22 @@ class Game {
     private running: boolean = false;
     public score: number = 0;
     public highestScore: number = 0;
-    public channelUsername: string | undefined;
+    public channelUsername: string;
     public eventEmitter: EventEmitter = new EventEmitter();
 
-    public async startGame(channelUsername: string) {
+    constructor(channelUsername: string) {
+        this.channelUsername = channelUsername;
+    }
+
+    public async getHighestScore() {
+        this.highestScore = await broadcasterHighestScore(this.channelUsername);
+        return this.highestScore;
+    }
+
+    public async startGame() {
         if (!this.running) {
-            this.channelUsername = channelUsername;
-            this.highestScore = await broadcasterHighestScore(channelUsername);
             this.running = true;
-            this.runGameLoop(channelUsername);
+            this.runGameLoop(this.channelUsername);
             this.eventEmitter.emit('gameStatus', GameState.Started);
         } else {
             this.eventEmitter.emit('gameStatus', GameState.AlreadyRunning);

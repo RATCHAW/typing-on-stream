@@ -52,7 +52,9 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
       .off('leaderboard')
       .on('leaderboard', (leaderboard: Array<{ value: string; score: number }>, highestScore: number) => {
         setBroadcastersLeaderboard(leaderboard);
-        setHighestScore(highestScore);
+        if (highestScore) {
+          setHighestScore(highestScore);
+        }
       });
 
     gameSocket.off('session').on('session', (data: { created: boolean; message: string }) => {

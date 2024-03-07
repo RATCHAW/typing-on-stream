@@ -13,7 +13,7 @@ interface ParticipantLabelProps {
 function ParticipantLabel({ children, score, colorized, secondary, trophy, className }: ParticipantLabelProps) {
   return (
     <div
-      className={cn('text-white p-[2px] rounded-lg border-solid bg-border text-[8px]  uppercase', className, {
+      className={cn('text-white p-[2px] rounded-lg border-solid bg-border text-[9px] uppercase', className, {
         colorful: colorized,
         'text-secondary': secondary
       })}

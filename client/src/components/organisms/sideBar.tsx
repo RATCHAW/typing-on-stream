@@ -7,7 +7,8 @@ import CamBox from '../atoms/camBox';
 import { useSocketGame } from '@/providers/game-provider';
 
 function SideBar() {
-  const { chatLeaderboard, broadcastersLeaderboard, highestScore } = useSocketGame();
+  const { chatLeaderboard, broadcastersLeaderboard } = useSocketGame();
+
   return (
     <div className="flex flex-col">
       <div className="flex justify-center mt-7 mb-8">
@@ -31,6 +32,7 @@ function SideBar() {
                   {participant.value}
                 </ParticipantLabel>
               ))}
+
               {[...Array(3 - broadcastersLeaderboard.length)].map((_, index) => (
                 <ParticipantLabel key={index} trophy score={0}>
                   Streamer
