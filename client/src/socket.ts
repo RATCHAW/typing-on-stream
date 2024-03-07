@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const apiUrl = 'http://localhost:3000';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const socketVerify = io(`${apiUrl}/verify`, { autoConnect: false });
 
