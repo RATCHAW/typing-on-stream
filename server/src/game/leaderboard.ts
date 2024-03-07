@@ -2,7 +2,6 @@ import redisClient from '@/database/redisClient';
 
 export const LeaderBoardStoring = async (broadcasterUsername: string, score: number) => {
     const existingScore = await redisClient.zScore('leaderboard', broadcasterUsername);
-    console.log('leaderboard stored');
     if (existingScore) {
         existingScore < score && (await redisClient.zAdd('leaderboard', [{ score, value: broadcasterUsername }]));
     } else {

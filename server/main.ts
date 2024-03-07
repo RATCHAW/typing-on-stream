@@ -1,4 +1,4 @@
-import client from '@/database/redisClient';
+import redisClient from '@/database/redisClient';
 import logger from '@/utils/logger';
 import mongoose from 'mongoose';
 import env from '@/env';
@@ -11,9 +11,9 @@ const app = express();
 const server = app.listen(3000, async () => {
     logger.info('Server is running on port 3000');
 
-    await client.connect().then(() => {
+    await redisClient.connect().then(() => {
         logger.info('Connected to Redis');
-        client.FLUSHALL();
+        redisClient.FLUSHALL();
         mongoose.connect(env.MONGO_URL).then(async () => {
             logger.info('Connected to database');
             await connectChatClients();

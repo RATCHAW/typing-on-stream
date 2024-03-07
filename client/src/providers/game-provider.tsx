@@ -61,7 +61,6 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
       const { created, message } = data;
       if (created) {
         setLoading(false);
-        console.log('loading false');
       } else {
         setErrorMsg(message);
       }
@@ -84,7 +83,6 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
         const randomIndex = Math.floor(Math.random() * themes.length);
         return themes[randomIndex] as WordTheme;
       }
-      console.log(wordAndDifficulties, 'newWord');
       setWords((prevWords) => [...prevWords, { ...wordAndDifficulties, theme: getRandomTheme() }]);
     });
 

@@ -1,13 +1,12 @@
 {
     "compilerOptions": {
         "lib": ["ESNext"],
-        "module": "esnext",
-        "target": "esnext",
+        "module": "ESNext",
+        "target": "ESNext",
         "moduleResolution": "bundler",
         "moduleDetection": "force",
         "outDir": "./dist",
-        "allowImportingTsExtensions": true,
-        "noEmit": true,
+        "composite": true,
         "strict": true,
         "downlevelIteration": true,
         "skipLibCheck": true,
@@ -17,6 +16,14 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["src/*"]
+        }
+    },
+    "tsc-alias": {
+        "verbose": false,
+        "resolveFullPaths": true,
+        "fileExtensions": {
+            "inputGlob": "{js,jsx,mjs}",
+            "outputCheck": ["js", "json", "jsx", "mjs"]
         }
     }
 }
