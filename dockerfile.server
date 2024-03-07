@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 ENV NAME value
 
-COPY .server /usr/src/app
+COPY ./server /usr/src/app
 RUN npm install
 RUN npm run build
 
