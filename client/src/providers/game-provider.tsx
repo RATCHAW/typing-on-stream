@@ -34,7 +34,6 @@ const SocketGameContext = createContext<GameProviderState>(initialState);
 export const SocketGameProvider = ({ children }: { children: React.ReactNode }) => {
   const [gameStatus, setGameStatus] = useState<string>('stopped');
   const [errorMsg, setErrorMsg] = useState('');
-  const [loading, setLoading] = useState(true);
   const [loosingWord, setLoosingWord] = useState('');
   const [currentScore, setCurrentScore] = useState(0);
   const [words, setWords] = useState<Array<WordAndDifficulties | DestroyedWord>>([]);
@@ -42,6 +41,7 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
   const [chatLeaderboard, setChatLeaderboard] = useState<Array<{ user: string; score: number }>>([]);
   const [broadcastersLeaderboard, setBroadcastersLeaderboard] = useState<Array<{ value: string; score: number }>>([]);
   const [highestScore, setHighestScore] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const gameSocket = socketGame;
 
@@ -61,6 +61,7 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
       const { created, message } = data;
       if (created) {
         setLoading(false);
+        console.log('loading false');
       } else {
         setErrorMsg(message);
       }

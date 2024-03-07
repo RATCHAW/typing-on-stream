@@ -42,11 +42,6 @@ export async function handleGameOverlay(socket: Socket) {
                     }
                 });
 
-                const leaderboard = await leaderBoardRetrieving();
-                const highestScore = await game.getHighestScore();
-
-                socket.emit('leaderboard', leaderboard, highestScore, broadcaster.username);
-
                 game.eventEmitter.on('destroyedWord', async (wordAndDifficulties, score: number, user: string) => {
                     socket.emit('destroyedWord', { wordAndDifficulties, newScore: score, user });
                 });
@@ -71,6 +66,11 @@ export async function handleGameOverlay(socket: Socket) {
                     socket.removeAllListeners();
                     clearInterval(leaderboardInterval);
                 });
+
+                const leaderboard = await leaderBoardRetrieving();
+                const highestScore = await game.getHighestScore();
+
+                socket.emit('leaderboard', leaderboard, highestScore, broadcaster.username);
 
                 socket.emit('session', { created: true, message: 'session created' });
             });

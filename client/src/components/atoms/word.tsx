@@ -15,7 +15,7 @@ export function Word({ word }: WordProps) {
   const theme = word.theme;
   const [props] = useSpring(() => ({
     from: { y: 0, x: getRandomXCoordinate() },
-    to: { y: window.innerHeight - 230 },
+    to: { y: window.innerHeight - 265 },
     config: { duration: word.wordTimeout }
   }));
 
