@@ -11,10 +11,11 @@
     },
     "name": "typing-game-on-stream",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "dist/main.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "server": "tsx main.ts",
+        "build": "tsc --noEmit main.ts",
         "watch": "tsx watch main.ts"
     },
     "keywords": [],

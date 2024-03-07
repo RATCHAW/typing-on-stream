@@ -2,10 +2,9 @@ import { useSocketGame } from '@/providers/game-provider';
 import DeathLine from '../atoms/deathLine';
 import PlayGame from './playGame';
 import ScenceInfo from './scenceInfo';
-import WaitingMenu from './waitingMenu';
 
 function GameContentSection() {
-  const { words, loading, gameStatus } = useSocketGame();
+  const { words } = useSocketGame();
 
   return (
     <div className="flex flex-grow px-[30px] border-2 border-border rounded-lg">
