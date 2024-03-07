@@ -10,9 +10,8 @@ export async function handleGameOverlay(socket: Socket) {
     const sessionId = workspace.name.split('/')[2];
 
     const session = await redisClient.HGET('sessions', sessionId);
-    console.log(workspace.sockets.size);
+
     if (workspace.sockets.size > 1) {
-        console.log('session already exists');
         socket.emit('session', {
             created: false,
             message: ' Your session is currently active in another window or tab',
@@ -30,7 +29,6 @@ export async function handleGameOverlay(socket: Socket) {
                 gameChatClient.onMessage(async (channel, user, message, msg) => {
                     //used to remove empty spaces added by 7TV exestension
                     const cleanMessage = message.split(' ')[0];
-                    console.log(cleanMessage);
                     game.removeMatchedWords(cleanMessage, msg.userInfo.displayName);
                     if (msg.userInfo.isBroadcaster && channel === broadcaster.username) {
                         if (cleanMessage == '!start') {
@@ -60,7 +58,6 @@ export async function handleGameOverlay(socket: Socket) {
                 });
 
                 socket.on('disconnect', async () => {
-                    console.log('disconnected');
                     gameChatClient.quit();
                     await redisClient.HDEL('sessions', sessionId);
                     socket.removeAllListeners();
