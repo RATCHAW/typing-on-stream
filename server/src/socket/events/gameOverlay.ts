@@ -42,8 +42,8 @@ export async function handleGameOverlay(socket: Socket) {
                     }
                 });
 
-                const highestScore = await broadcasterHighestScore(broadcaster.username);
-                socket.emit('leaderboard', game.highestScore, highestScore);
+                const leaderboard = await leaderBoardRetrieving();
+                socket.emit('leaderboard', leaderboard, game.highestScore);
 
                 game.eventEmitter.on('destroyedWord', (wordAndDifficulties, score: number, user: string) => {
                     socket.emit('destroyedWord', { wordAndDifficulties, newScore: score, user });
