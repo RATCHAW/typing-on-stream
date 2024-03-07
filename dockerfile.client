@@ -3,6 +3,9 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./client /usr/src/app
 
+ARG VITE_API_URL=https://api.game.ratchaw.xyz
+ENV VITE_API_URL=https://api.game.ratchaw.xyz
+
 RUN npm install && npm cache clean --force
 RUN npm run build
 RUN ls -l /usr/src/app/dist
