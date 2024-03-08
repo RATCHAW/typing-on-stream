@@ -10,9 +10,9 @@ function SideBar() {
   const { chatLeaderboard, broadcastersLeaderboard } = useSocketGame();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden">
       <div className="flex justify-center mt-7 mb-8">
-        <Logo />
+        <Logo className="text-[20px]" />
       </div>
       <div className="space-y-[14px]">
         <div>
@@ -33,7 +33,7 @@ function SideBar() {
               </ParticipantLabel>
             ))}
 
-            {[...Array(3 - broadcastersLeaderboard.length)].map((_, index) => (
+            {[...Array(3 - broadcastersLeaderboard?.length)].map((_, index) => (
               <ParticipantLabel key={index} trophy score={0}>
                 Streamer
               </ParticipantLabel>
@@ -41,9 +41,9 @@ function SideBar() {
           </>
         </Leaderboard>
 
-        <Leaderboard icon={<Chat />} title="chat leaderboard">
-          <>
-            {chatLeaderboard.slice(0, 4).map((participant, index) => (
+        <Leaderboard icon={<Chat />} title="chat leaderboard" className="flex flex-col">
+          <div className="space-y-2">
+            {chatLeaderboard.slice(0, 5).map((participant, index) => (
               <ParticipantLabel
                 key={index}
                 trophy
@@ -54,12 +54,12 @@ function SideBar() {
                 {participant.user}
               </ParticipantLabel>
             ))}
-            {[...Array(4 - chatLeaderboard.length)].map((_, index) => (
+            {[...Array(5 - chatLeaderboard?.length)].map((_, index) => (
               <ParticipantLabel key={index} trophy score={0}>
                 Chatter
               </ParticipantLabel>
             ))}
-          </>
+          </div>
         </Leaderboard>
       </div>
     </div>

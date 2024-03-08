@@ -13,7 +13,7 @@ function ScenceInfo() {
         {wordDistroyedLogs &&
           wordDistroyedLogs.slice(0, 2).map((log, index) => (
             <LogLabel key={`${log.id}${index}${log.user}`} icon={<Sword />} secondary={index === 1}>
-              {log.user} GOT THE WORD "{log.word}"
+              {log.user} CATCHED THE WORD "{log.word}"
             </LogLabel>
           ))}
       </div>

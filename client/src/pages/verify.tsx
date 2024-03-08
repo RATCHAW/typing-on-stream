@@ -6,7 +6,6 @@ import StepsCards from '@/components/molecules/stepsCards';
 import GameSettionLink from '@/components/molecules/hiddenInputStep';
 import VerificationCodeStep from '@/components/molecules/verificationCodeStep';
 import EnterChannelNameStep from '@/components/molecules/enterChannelNameStep';
-import Instructions from '@/components/organisms/instructions';
 
 function Verify() {
   const {
@@ -67,10 +66,8 @@ function Verify() {
           ))
         )}
       </div>
-      <div className="mb-12">
-        <Instructions />
-      </div>
-      <div>
+
+      <div className="mt-[20px]">
         <StepsCards activeStep={activeStep} />
       </div>
       <div>
