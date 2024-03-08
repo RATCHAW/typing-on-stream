@@ -39,9 +39,18 @@ function adjustDifficulty(score: number) {
         wordDifficulty = 4;
         toBeDestroyed = 4;
         wordTimeout = 6000;
-        wordInterval = { min: 135000, max: 1700 };
+        wordInterval = { min: 1350, max: 1700 };
         wordMaxLength = 8;
         wordMinLength = 4;
+        capitalizeWords = true;
+        wordShake = true;
+    } else {
+        wordDifficulty = 5;
+        toBeDestroyed = 5;
+        wordTimeout = 5500;
+        wordInterval = { min: 1300, max: 1600 };
+        wordMaxLength = 9;
+        wordMinLength = 5;
         capitalizeWords = true;
         wordShake = true;
     }
