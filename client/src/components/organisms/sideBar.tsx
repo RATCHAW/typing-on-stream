@@ -12,7 +12,7 @@ function SideBar() {
   return (
     <div className="flex flex-col overflow-hidden">
       <div className="flex justify-center mt-7 mb-8">
-        <Logo />
+        <Logo className="text-[20px]" />
       </div>
       <div className="space-y-[14px]">
         <div>
