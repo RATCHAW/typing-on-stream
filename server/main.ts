@@ -13,7 +13,6 @@ const server = app.listen(3000, async () => {
 
     await redisClient.connect().then(() => {
         logger.info('Connected to Redis');
-        redisClient.FLUSHALL();
         mongoose.connect(env.MONGO_URL).then(async () => {
             logger.info('Connected to database');
             await connectChatClients();
