@@ -3,8 +3,16 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { socketGame } from '@/socket';
 import { DestroyedWord, WordAndDifficulties, WordTheme } from '@/types/word';
 
+enum GameState {
+  NotRunning = 'game is not running',
+  Started = 'started',
+  AlreadyRunning = 'game already running',
+  Stopped = 'stopped',
+  GameOver = 'over'
+}
+
 interface GameProviderState {
-  gameStatus: string;
+  gameStatus: GameState;
   errorMsg: string;
   loading: boolean;
   loosingWord: string;
@@ -17,7 +25,7 @@ interface GameProviderState {
 }
 
 const initialState: GameProviderState = {
-  gameStatus: 'stopped',
+  gameStatus: GameState.Stopped,
   errorMsg: '',
   loading: true,
   loosingWord: '',
@@ -32,7 +40,7 @@ const initialState: GameProviderState = {
 const SocketGameContext = createContext<GameProviderState>(initialState);
 
 export const SocketGameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [gameStatus, setGameStatus] = useState<string>('stopped');
+  const [gameStatus, setGameStatus] = useState<GameState>(GameState.Stopped);
   const [errorMsg, setErrorMsg] = useState('');
   const [loosingWord, setLoosingWord] = useState('');
   const [currentScore, setCurrentScore] = useState(0);
@@ -66,7 +74,7 @@ export const SocketGameProvider = ({ children }: { children: React.ReactNode }) 
       }
     });
 
-    gameSocket.off('gameStatus').on('gameStatus', (data: { status: string; word?: string }) => {
+    gameSocket.off('gameStatus').on('gameStatus', (data: { status: GameState; word?: string }) => {
       const { status, word } = data;
       if (status === 'over' || status === 'stopped' || status === 'started') {
         setWords([]);

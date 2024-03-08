@@ -10,7 +10,7 @@ let wordShake: boolean; // make the word start shaking
 function adjustDifficulty(score: number) {
     if (score < 10) {
         wordDifficulty = 1;
-        toBeDestroyed = 2;
+        toBeDestroyed = 1;
         wordTimeout = 7000;
         wordInterval = { min: 1500, max: 2000 };
         wordMaxLength = 5;
@@ -20,18 +20,36 @@ function adjustDifficulty(score: number) {
     } else if (score < 20) {
         wordDifficulty = 2;
         toBeDestroyed = 2;
-        wordTimeout = 4500;
-        wordInterval = { min: 1000, max: 1500 };
+        wordTimeout = 7000;
+        wordInterval = { min: 1500, max: 2000 };
         wordMaxLength = 6;
+        wordMinLength = 3;
+        capitalizeWords = false;
+        wordShake = true;
+    } else if (score < 30) {
+        wordDifficulty = 3;
+        toBeDestroyed = 3;
+        wordTimeout = 6500;
+        wordInterval = { min: 1400, max: 1800 };
+        wordMaxLength = 7;
         wordMinLength = 4;
         capitalizeWords = false;
         wordShake = true;
+    } else if (score < 40) {
+        wordDifficulty = 4;
+        toBeDestroyed = 4;
+        wordTimeout = 6000;
+        wordInterval = { min: 1350, max: 1700 };
+        wordMaxLength = 8;
+        wordMinLength = 4;
+        capitalizeWords = true;
+        wordShake = true;
     } else {
-        wordDifficulty = 3;
-        toBeDestroyed = 3;
-        wordTimeout = 4000;
-        wordInterval = { min: 2000, max: 2500 };
-        wordMaxLength = 7;
+        wordDifficulty = 5;
+        toBeDestroyed = 5;
+        wordTimeout = 5500;
+        wordInterval = { min: 1300, max: 1600 };
+        wordMaxLength = 9;
         wordMinLength = 5;
         capitalizeWords = true;
         wordShake = true;

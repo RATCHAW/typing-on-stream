@@ -6,9 +6,9 @@ import { useSocketGame } from '@/providers/game-provider';
 function Game() {
   const { loading } = useSocketGame();
   return (
-    <div className="h-screen  bg-background">
+    <div className="h-screen bg-background">
       {!loading ? (
-        <div className="flex bg-background space-x-6 p-5">
+        <div className="flex bg-background space-x-6 p-5 h-screen">
           <SideBar />
           <GameContentSection />
         </div>
