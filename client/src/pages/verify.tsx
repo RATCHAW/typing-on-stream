@@ -67,10 +67,8 @@ function Verify() {
           ))
         )}
       </div>
-      <div className="mb-12">
-        <Instructions />
-      </div>
-      <div>
+
+      <div className="mt-[20px]">
         <StepsCards activeStep={activeStep} />
       </div>
       <div>
