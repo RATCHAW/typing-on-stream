@@ -10,7 +10,7 @@ export const LeaderBoardStoring = async (broadcasterUsername: string, score: num
 };
 
 export const leaderBoardRetrieving = async () => {
-    const leaderboard = await redisClient.zRangeWithScores('leaderboard', 0, 9);
+    const leaderboard = await redisClient.zRangeWithScores('leaderboard', 0, 3, { REV: true });
     return leaderboard;
 };
 
