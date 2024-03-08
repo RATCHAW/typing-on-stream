@@ -6,7 +6,6 @@ import StepsCards from '@/components/molecules/stepsCards';
 import GameSettionLink from '@/components/molecules/hiddenInputStep';
 import VerificationCodeStep from '@/components/molecules/verificationCodeStep';
 import EnterChannelNameStep from '@/components/molecules/enterChannelNameStep';
-import Instructions from '@/components/organisms/instructions';
 
 function Verify() {
   const {
