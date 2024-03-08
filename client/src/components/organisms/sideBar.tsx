@@ -33,7 +33,7 @@ function SideBar() {
               </ParticipantLabel>
             ))}
 
-            {[...Array(3 - broadcastersLeaderboard.length)].map((_, index) => (
+            {[...Array(3 - broadcastersLeaderboard?.length)].map((_, index) => (
               <ParticipantLabel key={index} trophy score={0}>
                 Streamer
               </ParticipantLabel>
@@ -54,7 +54,7 @@ function SideBar() {
                 {participant.user}
               </ParticipantLabel>
             ))}
-            {[...Array(4 - chatLeaderboard.length)].map((_, index) => (
+            {[...Array(4 - chatLeaderboard?.length)].map((_, index) => (
               <ParticipantLabel key={index} trophy score={0}>
                 Chatter
               </ParticipantLabel>
