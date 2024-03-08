@@ -41,9 +41,9 @@ function SideBar() {
           </>
         </Leaderboard>
 
-        <Leaderboard icon={<Chat />} title="chat leaderboard" className="flex h- flex-col ">
-          <>
-            {chatLeaderboard.slice(0, 4).map((participant, index) => (
+        <Leaderboard icon={<Chat />} title="chat leaderboard" className="flex flex-col">
+          <div className="space-y-2">
+            {chatLeaderboard.slice(0, 5).map((participant, index) => (
               <ParticipantLabel
                 key={index}
                 trophy
@@ -54,12 +54,12 @@ function SideBar() {
                 {participant.user}
               </ParticipantLabel>
             ))}
-            {[...Array(7 - chatLeaderboard?.length)].map((_, index) => (
+            {[...Array(5 - chatLeaderboard?.length)].map((_, index) => (
               <ParticipantLabel key={index} trophy score={0}>
                 Chatter
               </ParticipantLabel>
             ))}
-          </>
+          </div>
         </Leaderboard>
       </div>
     </div>
